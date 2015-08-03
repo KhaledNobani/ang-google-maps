@@ -1,0 +1,8 @@
+html, body, section {
+    height: 100%;
+    width: 100%;
+}
+
+section {
+    height: 60%;
+}
