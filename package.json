@@ -1,0 +1,29 @@
+{
+  "name": "angular-google-maps",
+  "version": "1.0.0",
+  "description": "Module to initialize Google Maps API",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/khalednobani/angular-google-maps.git"
+  },
+  "keywords": [
+    "Google",
+    "APIs",
+    "Google",
+    "Maps",
+    "API",
+    "JavaScript",
+    "Client-Side",
+    "AngularJS"
+  ],
+  "author": "Khaled Nobani",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/khalednobani/angular-google-maps/issues"
+  },
+  "homepage": "https://github.com/khalednobani/angular-google-maps#readme"
+}
