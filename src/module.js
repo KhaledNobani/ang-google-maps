@@ -60,8 +60,6 @@
 
         var self = this;
 
-        console.log(self);
-
         this.map = new g.maps.Map(element[0].children[0] || null, self.mapOptions);
 
     }
