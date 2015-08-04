@@ -14,14 +14,16 @@
         <section ng-controller = "mainCtrl" name = "{{appName}}">
 
             <h1> Google Maps API </h1>
-
-            <map-temp id="main-map" options="{id: 'main-map', lat: 18.787747, lng: 98.99312839999999}"></map-temp>
+            
+            <auto-complete-temp></auto-complete-temp>
+            
+            <map-temp id="main-map" options="{id: 'main-map', lat: 18.787747, lng: 98.99312839999999, zoom: 20}"></map-temp>
 
         </section>
 
         <!-- scripts -->
         <script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
-        <script src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBXUuQo9o805m-AId1Lmtlq3WG6IrsiAQY&libraries=places"></script>
+        <script src = "https://maps.googleapis.com/maps/api/js?key={Your Key}&libraries=places"></script>
         <script src = "../src/module.js"></script>
         <script src = "assets/js/main.module.js"></script>
         <!-- /scripts -->
