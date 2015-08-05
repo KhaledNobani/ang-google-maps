@@ -9,3 +9,8 @@ map-temp .container {
     height: 100%;
     width: 100%;
 }
+
+input[type='text'] {
+    padding: 1%;
+    width: 98%;
+}
