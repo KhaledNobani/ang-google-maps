@@ -6,3 +6,7 @@ html, body, section {
 section {
     height: 60%;
 }
+
+h1 {
+    margin: 1%;
+}

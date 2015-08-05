@@ -11,6 +11,6 @@ map-temp .container {
 }
 
 input[type='text'] {
-    padding: 1em;
-    width: 100%;
+    padding: 1%;
+    width: 98%;
 }
