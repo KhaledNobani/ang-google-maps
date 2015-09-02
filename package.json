@@ -1,5 +1,5 @@
 {
-  "name": "angular-google-maps",
+  "name": "ang-google-maps",
   "version": "1.0.0",
   "description": "Module to initialize Google Maps API",
   "main": "index.js",
