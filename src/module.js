@@ -1,7 +1,7 @@
 (function(ang, g) {
 
     'use strict';
-    ang.module('angularjs-google-maps', [])
+    ang.module('ang-google-maps', [])
         .factory('Map', function() { return MapFactory; })
         .factory('GetPosition', function() { return GetPosition; })
         .factory('GetMarker', function() { return GetMarker; })

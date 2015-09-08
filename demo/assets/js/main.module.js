@@ -2,7 +2,7 @@
 
     'use strict';
 
-    ang.module('main', ['angularjs-google-maps'])
+    ang.module('main', ['ang-google-maps'])
         .controller('mainCtrl', ['$scope', 'Direction', mainCtrl]);
 
     function mainCtrl($scope, Direction) {
