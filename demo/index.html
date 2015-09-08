@@ -12,14 +12,36 @@
     </head>
     <body>
 
-        <section ng-controller = "mainCtrl" name = "{{appName}}">
+        <section ng-controller = "mainCtrl" name = "{{appName}}" ng-controller="MainCtrl">
 
             <h1> Google Maps API </h1>
-                        
-            <map-temp id="main-map" options="{id: 'main-map', lat: 55.755826, lng: 37.6173, zoom: 14}">
-                <auto-complete-temp></auto-complete-temp>
-            </map-temp>
 
+            <div class="auto-complete-box">
+
+                <input class="" type="text" auto-complete-temp  map="map" placeholder="Enter current location" onfill="setLocation" model="{name: 'pick-up', label: 'start_address'}">
+
+            </div>
+            
+            <div class="auto-complete-box">
+
+                <input class="" type="text" auto-complete-temp  map="map" placeholder="Enter destination" onfill="setLocation" model="{name: 'drop-off-1', label: 'end_address'}">
+
+            </div>
+
+            <div class="map-container" map-temp configs="{id: 'main-map', lat: 13.740722, lng: 100.555531, markers: [{name: 'pick-up'}, {name: 'drop-off-1'}, {name: 'drop-off-2', show: 1}, {name: 'drop-off-3', show: 1}, {name: 'drop-off-4', show: 1}, {name: 'drop-off-5', show: 1}, {name: 'drop-off-6', show: 1}] }"></div>
+            
+            <div class="auto-complete-box">
+
+                <input class="" type="text" auto-complete-temp  map="map" placeholder="Enter destination" onfill="setLocation" model="{name: 'drop-off-2', label: 'end_address'}">
+
+            </div>
+            
+            <div class="auto-complete-box">
+
+                <input class="" type="text" auto-complete-temp  map="map" placeholder="Enter destination" onfill="setLocation" model="{name: 'drop-off-2', label: 'end_address'}">
+
+            </div>
+            
         </section>
 
         <!-- scripts -->

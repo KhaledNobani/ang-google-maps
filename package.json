@@ -1,6 +1,6 @@
 {
   "name": "ang-google-maps",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Module to initialize Google Maps API",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/khalednobani/angular-google-maps.git"
+    "url": "git+ssh://git@github.com/khalednobani/ang-google-maps.git"
   },
   "keywords": [
     "Google",

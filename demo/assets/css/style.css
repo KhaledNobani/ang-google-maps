@@ -10,3 +10,7 @@ section {
 h1 {
     margin: 1%;
 }
+
+.map-container {
+    height: 100%;
+}

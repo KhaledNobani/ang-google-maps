@@ -14,3 +14,7 @@ input[type='text'] {
     padding: 1%;
     width: 98%;
 }
+
+.container {
+    height: 100%;
+}
