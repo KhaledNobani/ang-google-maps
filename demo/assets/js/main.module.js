@@ -17,6 +17,13 @@
             console.log($Obj);
         };
         
+        $scope.handleMarkerDrag = function($Event, $Model, $Scope) {
+            
+            console.log("Marker Drag Event");
+            console.log(arguments);
+            
+        };
+        
         $scope.setLocation = function($Position, $Model, $CoreModel) {
             
             console.log("SetLocation");

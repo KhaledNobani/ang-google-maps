@@ -111,7 +111,8 @@
             scope: {
                 map: '=map',
                 model: '=model',
-                onfill: '=onfill'
+                onfill: '=onfill',
+                ondrag: '=ondrag'
             }
 
         };
@@ -347,6 +348,9 @@
             
             console.log("Dragging is ended ...");
             console.log($Event);
+            
+            if(typeof $Self.ondrag == 'function') $Self.ondrag($Event, $Self.model, $Self);
+            
         });       
         
         $Self.model.marker.addListener('click', function($Event) {
@@ -361,6 +365,7 @@
         $Self.map.locations[$Self['model']['label']] = $Self.element;
 
         if(typeof $Self.onfill == 'function') $Self.onfill($Position, $Self.model, place);
+        
 
     }
 
