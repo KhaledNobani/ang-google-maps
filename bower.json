@@ -1,0 +1,27 @@
+{
+  "name": "ang-google-maps",
+  "version": "1.0.3",
+  "homepage": "https://github.com/khalednobani/ang-google-maps",
+  "description": "Initialise Google Maps, Set Location, Drop Pins, Get Connected Routes between the current location and the destination.",
+  "main": "index.js",
+  "keywords": [
+    "AngularJS",
+    "Client-Side",
+    "JavaScript",
+    "API",
+    "Maps",
+    "APIs",
+    "Google"
+  ],
+  "authors": [
+    "Khaled Nobani"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

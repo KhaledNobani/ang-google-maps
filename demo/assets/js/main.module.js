@@ -17,7 +17,7 @@
             console.log($Obj);
         };
         
-        $scope.setLocation = function($Position, $Model) {
+        $scope.setLocation = function($Position, $Model, $CoreModel) {
             
             console.log("SetLocation");
             console.log(arguments);

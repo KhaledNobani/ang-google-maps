@@ -310,12 +310,6 @@
         //this.map.markers.push(this.currentMarker);
         
     }
-    
-    function updatMarker(List, model) {
-        
-        
-        
-    }
 
     function fillInAdress() {
 
@@ -327,6 +321,8 @@
             $Position = GetPosition(lat, lng);
         
         if ( !($Self['model']) ) $Self.model = { label: '', name: '', show: 0 };
+        
+        console.log(place);
         
         $Self.map.setCenter($Position);
 
@@ -346,13 +342,11 @@
         }
 
         $Self.model.marker.addListener('dragend', function($Event) {
-                       
             // Update current input
             $Self.element.value = $Event.latLng.toString();
             
             console.log("Dragging is ended ...");
             console.log($Event);
-
         });       
         
         $Self.model.marker.addListener('click', function($Event) {
@@ -366,7 +360,7 @@
          // Assign inputs element into map object
         $Self.map.locations[$Self['model']['label']] = $Self.element;
 
-        if(typeof $Self.onfill == 'function') $Self.onfill($Position, $Self.model);
+        if(typeof $Self.onfill == 'function') $Self.onfill($Position, $Self.model, place);
 
     }
 
@@ -376,7 +370,6 @@
         
         
         for (var index = 0, length = $Markers.length; index < length; index++) {
-            
             if('marker' in $Markers[index]) $Markers[index]['marker'].setMap(null);
         }
 

@@ -23,7 +23,8 @@
   "author": "Khaled Nobani",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/khalednobani/angular-google-maps/issues"
+    "url": "https://github.com/khalednobani/ang-google-maps/issues"
   },
-  "homepage": "https://github.com/khalednobani/angular-google-maps#readme"
+  "homepage": "https://github.com/khalednobani/ang-google-maps#readme",
+  "dependencies": {}
 }
