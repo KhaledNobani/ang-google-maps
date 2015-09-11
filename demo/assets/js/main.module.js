@@ -10,9 +10,7 @@
         var $Self = this;
                 
         $scope.currentDestination = 'dropOff1';
-        
-        $scope.test = 123123;
-        
+
         setModel.call($scope);
                 
         $scope.handleMarkerDrop = function($Event, $Model, $AutoCompScope) {
@@ -29,14 +27,6 @@
 
         };
         
-        $scope.$watch('test', function(newValue, oldValue) {
-            console.log('has been changed 1');
-                        
-            return newValue
-        }).bind($scope);
-        
-        //$scope.$digest();
-
         $scope.setPickup = function($Position, $Model, $CoreModel) {
 
             $scope.location['pickUp'] = $Position;
@@ -49,10 +39,6 @@
             $scope.location[$scope.currentDestination] = $Position;
             $scope.setLocation();
             
-        };
-
-        $scope.getBindName = function(name) {
-            return $scope[name];
         };
 
         $scope.setLocation = function($Position, $Model, $CoreModel) {

@@ -195,6 +195,8 @@
       */
     function initMap(element) {
         
+        this.mapOptions['disableDefaultUI'] = true;
+        
         this.$parent.map = this.map = new g.maps.Map(this.mapContainer, this.mapOptions);
         
         this.map.markers = [];
