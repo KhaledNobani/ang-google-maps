@@ -25,6 +25,7 @@
     "tests"
   ],
   "dependencies": {
+    "ang-google-services": "*",
     "angular": "1.4.5"
   }
 }

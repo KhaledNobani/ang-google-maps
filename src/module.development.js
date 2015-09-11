@@ -188,6 +188,11 @@
       */
     function initMap(element) {
         
+        console.log("Line 186");
+        console.log(this);
+        
+        console.log(this);
+        
         this.$parent.map = this.map = new g.maps.Map(this.mapContainer, this.mapOptions);
         
         this.map.markers = [];
@@ -212,10 +217,22 @@
 
     }
 
-    // For incoming features
     function attachMapEvents() {
         
         var self = this;
+        
+        /*
+        this.map.addListener('bounds_changed', function($Event) {
+            
+            console.log("Bounds have changed");
+                        
+            if(typeof self['onboundschanged'] == 'function') self.onboundschanged({
+                $Event: $Event,
+                $Map: self.map
+            });
+            
+        });
+        */
         
     }
 
@@ -252,6 +269,9 @@
         $rootScope[$scope.model['name']] = '';
 
         $scope.$parent.$watch($scope.model['name'], function(newValue, oldValue) {
+
+            console.log("Changing on it's value");
+            console.log(arguments);
             $scope.element.value = newValue;
             return newValue;
 
@@ -338,6 +358,10 @@
         }
 
         $Self.model.marker.addListener('dragend', function($Event) {
+
+            console.log("Dragging is ended ...");
+            console.log($Event);
+            
             if(typeof $Self.ondrop == 'function') $Self.ondrop($Event, $Self.model, $Self);
             
         });       
@@ -402,6 +426,8 @@
 
                         if (status == g.maps.DirectionsStatus.OK) {
                             // Display the route on the map.
+                            console.log("OK Setting Route");
+                            console.log(response);
                             $DirectionDisplay.setDirections(response);
                         }
 

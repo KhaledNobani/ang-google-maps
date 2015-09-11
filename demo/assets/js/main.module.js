@@ -2,53 +2,90 @@
 
     'use strict';
 
-    ang.module('main', ['ang-google-maps'])
-        .controller('mainCtrl', ['$scope', 'Direction', mainCtrl]);
+    ang.module('main', ['ang-google-maps', 'ang-google-services'])
+        .controller('mainCtrl', ['$scope', 'Direction', '$Geocode', mainCtrl]);
 
-    function mainCtrl($scope, Direction) {
-        
-        console.log(Direction)
+    function mainCtrl($scope, Direction, $Geocode) {
         
         var $Self = this;
+                
+        $scope.currentDestination = 'dropOff1';
+        
+        $scope.test = 123123;
         
         setModel.call($scope);
-        
-        $scope.test = function($Obj) {
-            console.log($Obj);
-        };
-        
-        $scope.handleMarkerDrag = function($Event, $Model, $Scope) {
+                
+        $scope.handleMarkerDrop = function($Event, $Model, $AutoCompScope) {
             
-            console.log("Marker Drag Event");
-            console.log(arguments);
-            
-        };
-        
-        $scope.setLocation = function($Position, $Model, $CoreModel) {
-            
-            console.log("SetLocation");
-            console.log(arguments);
+            $scope.location[$Model.name] = $Event.latLng;
 
-            $scope.location[$Model.name] = $Position;
-            
-            console.log($scope.location);
-            
-            var current = $scope.location['pick-up'],
-                destination = $scope.location['drop-off-1'];
-
-            if ($Model['name'] != 'drop-off-1' && $Model['name'] != 'pick-up') return;
-
-            // Show the route
-            if (current && destination) Direction.setRoute({
-                map: $scope.map,
-                current: current,
-                destination: destination
+            $Geocode.getNames({
+                coords: $Event.latLng
+            }).then(function(results) {
+                $AutoCompScope.element.value = results[0].formatted_address || '';
+            }, function(error) {
+                console.error(error);
             });
 
         };
+        
+        $scope.$watch('test', function(newValue, oldValue) {
+            console.log('has been changed 1');
+                        
+            return newValue
+        }).bind($scope);
+        
+        //$scope.$digest();
 
-        window.$scope = $scope;
+        $scope.setPickup = function($Position, $Model, $CoreModel) {
 
+            $scope.location['pickUp'] = $Position;
+            $scope.setLocation();
+            
+        };
+
+        $scope.setDropoff1 = function($Position, $Model, $CoreModel) {
+
+            $scope.location[$scope.currentDestination] = $Position;
+            $scope.setLocation();
+            
+        };
+
+        $scope.getBindName = function(name) {
+            return $scope[name];
+        };
+
+        $scope.setLocation = function($Position, $Model, $CoreModel) {
+
+            var current = $scope.location['pickUp'],
+                destination = $scope.location[$scope.currentDestination];
+
+            // Show the route
+            if (current && destination) {
+                Direction.setRoute({
+                    map: $scope.map,
+                    current: current,
+                    destination: destination
+                });
+            }
+
+        };
+
+        $scope.handleDirectionChange = function($Leg, done) {
+
+            console.log('Handle on change');
+            //$tempScope['pickUp'] = Math.random(1000);
+
+            $scope['pickUp'] = $Leg.start_address;
+            $scope[$scope.currentDestination] = $Leg.end_address;
+            $scope.location['pickUp'] = $Leg.start_location;
+            $scope.location[$scope.currentDestination] = $Leg.end_location;
+            
+            // To update input fields
+            done($scope);
+
+        };
+        
     }
     
     function setModel() {
