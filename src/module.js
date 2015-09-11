@@ -6,7 +6,7 @@
         .factory('GetPosition', function() { return GetPosition; })
         .factory('GetMarker', function() { return GetMarker; })
         .factory('Geocode', function() { return Geocode(); })
-        .factory('Direction', ['$q', '$rootScope', function($q, $rootScope) { 
+        .factory('Direction', ['$q', function($q) { 
 
             var $DirectionService = new g.maps.DirectionsService,
                 $DirectionDisplay = new g.maps.DirectionsRenderer({
@@ -21,7 +21,6 @@
                     $Leg = $Directions.routes[0].legs[0];
                 
                 if (typeof $Map.ondirectionchange == 'function') $Map.ondirectionchange($Leg, function($scope) {
-                    //$rootScope.digest();
                     if ($scope) $scope.$digest();
                 });
 
@@ -34,7 +33,7 @@
 
         }])
         .directive('mapTemp', ['$window', '$document', '$http', mapTempFactory])
-        .directive('autoCompleteTemp', ['$window', '$http', '$rootScope', autoCompleteTempFactory]);
+        .directive('autoCompleteTemp', ['$window', '$http', autoCompleteTempFactory]);
 
     /**
       * Factory of google map's marker
@@ -91,7 +90,7 @@
                 id: "=id",
                 configs: "=configs",
                 oncenterchange: "=oncenterchange",
-                ondirectionchange: "=ondirectionchange"
+                ondirectionchange: "=?ondirectionchange"
             },
             template: '<div class="filter" ng-transclude=""></div>',
             transclude: true,
@@ -99,6 +98,8 @@
         };
 
     }
+    
+    mapTempFactory.$inject = ['$window', '$document', '$http'];
 
     /**
       * Creates the factory of autoCompleteTemp.
@@ -106,14 +107,14 @@
       * @param {Object} $window
       * @param {Object} $http
       */
-    function autoCompleteTempFactory($window, $http, $rootScope) {
+    function autoCompleteTempFactory($window, $http) {
 
         return {
 
             controller: autoCompleteTempCtrl,
             link: function($scope, element, $atts, $ctrls) {
                 
-                autoCompleteTempLink.call(this, $scope, element, $atts, $ctrls, $rootScope);
+                autoCompleteTempLink.call(this, $scope, element, $atts, $ctrls);
                 
             },
             scope: {
@@ -126,6 +127,8 @@
         };
 
     }
+    
+    autoCompleteTempFactory.$inject = ['$window', '$http'];
 
     /**
       * Handles map-temp directive's controller
@@ -145,6 +148,8 @@
         $scope.createMapContainer = createMapContainer;
 
     }
+    
+    mapTempCtrl.$inject = ['$scope', 'GetPosition'];
 
     /**
       * Handles map-temp directive's link
@@ -164,6 +169,8 @@
         initMap.call($scope, element);
 
     }
+    
+    mapTempLink.$inject = ['$scope', 'element', 'attrs', 'ctrls'];
 
     /**
       * Creates map's container
@@ -228,7 +235,9 @@
         $scope.fillInAdress = fillInAdress; 
         $scope.model = $scope.model || {};        
     }
-
+    
+    autoCompleteTempCtrl.$inject = ['$scope'];
+    
     /**
       * Handles auto-complete-temp directive's link
       *
@@ -237,7 +246,7 @@
       * @param {Object} attrs
       * @param {Array} ctlrs
       */
-    function autoCompleteTempLink($scope, element, attrs, ctrls, $rootScope) {
+    function autoCompleteTempLink($scope, element, attrs, ctrls) {
 
         // Create autocomplete object
         $scope.autocomplete = new g.maps.places.Autocomplete(
@@ -248,16 +257,12 @@
         );
         
         $scope.element = element[0];
-        
-        $rootScope[$scope.model['name']] = '';
-
+        $scope.$parent[$scope.model['name']] = '';
         $scope.$parent.$watch($scope.model['name'], function(newValue, oldValue) {
             $scope.element.value = newValue;
             return newValue;
 
         }).bind($scope.$parent);
-
-        //$scope[$scope.model['name']] = 'Khaled';
 
         // Attach an event into autocomplete
         g.maps.event.addListener($scope.autocomplete, 'place_changed', function() {
@@ -265,6 +270,8 @@
         });
 
     }
+    
+    autoCompleteTempLink.$inject = ['$scope', 'element', 'attrs', 'ctrls'];
     
     function findInList(List, $Obj) {
         
