@@ -3,9 +3,9 @@
     'use strict';
 
     ang.module('main', ['ang-google-maps', 'ang-google-services'])
-        .controller('mainCtrl', ['$scope', 'Direction', '$Geocode', mainCtrl]);
+        .controller('mainCtrl', ['$scope', 'Direction', '$Geocode', '$rootScope', mainCtrl]);
 
-    function mainCtrl($scope, Direction, $Geocode) {
+    function mainCtrl($scope, Direction, $Geocode, $rootScope) {
         
         var $Self = this;
                 
@@ -55,19 +55,16 @@
 
         };
 
-        $scope.handleDirectionChange = function($Leg, done) {
+        $scope.handleDirectionChange = function($Leg, $parentScope) {
 
             console.log('Handle on change');
-            //$tempScope['pickUp'] = Math.random(1000);
+            console.log(arguments);
 
-            $scope['pickUp'] = $Leg.start_address;
-            $scope[$scope.currentDestination] = $Leg.end_address;
+            $parentScope['pickUp'] = $scope['pickUp'] = $Leg.start_address;
+            $parentScope[$scope.currentDestination] = $scope[$scope.currentDestination] = $Leg.end_address;
             $scope.location['pickUp'] = $Leg.start_location;
             $scope.location[$scope.currentDestination] = $Leg.end_location;
             
-            // To update input fields
-            done($scope);
-
         };
         
     }

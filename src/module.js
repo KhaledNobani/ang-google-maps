@@ -6,7 +6,7 @@
         .factory('GetPosition', function() { return GetPosition; })
         .factory('GetMarker', function() { return GetMarker; })
         .factory('Geocode', function() { return Geocode(); })
-        .factory('Direction', ['$q', function($q) { 
+        .factory('Direction', ['$q', '$rootScope', function($q, $rootScope) { 
 
             var $DirectionService = new g.maps.DirectionsService,
                 $DirectionDisplay = new g.maps.DirectionsRenderer({
@@ -19,9 +19,9 @@
                     $Map = this.map,
                     $Leg = $Directions.routes[0].legs[0];
                 
-                if (typeof $Map.ondirectionchange == 'function') $Map.ondirectionchange({$Leg: $Leg, done: function($scope) {
-                    if ($scope) $scope.$apply();
-                }});
+                if (typeof $Map.ondirectionchange == 'function') $Map.ondirectionchange({$Leg: $Leg, $parentScope: $rootScope});
+                
+                $rootScope.$digest();
 
             });
 
@@ -32,7 +32,7 @@
 
         }])
         .directive('mapTemp', ['$window', '$document', '$http', mapTempFactory])
-        .directive('autoCompleteTemp', ['$window', '$http', autoCompleteTempFactory]);
+        .directive('autoCompleteTemp', ['$window', '$http', '$rootScope', autoCompleteTempFactory]);
 
     /**
       * Factory of google map's marker
@@ -105,19 +105,19 @@
       * @param {Object} $window
       * @param {Object} $http
       */
-    function autoCompleteTempFactory($window, $http) {
+    function autoCompleteTempFactory($window, $http, $rootScope) {
 
         return {
 
             controller: autoCompleteTempCtrl,
             link: function($scope, element, $atts, $ctrls) {
                 
-                autoCompleteTempLink.call(this, $scope, element, $atts, $ctrls);
+                autoCompleteTempLink.call(this, $scope, element, $atts, $ctrls, $rootScope);
                 
             },
             scope: {
                 map: '=map',
-                name: '@',
+                nameofinput: '@',
                 onfill: '&onfill',
                 ondrop: '&ondrop'
             }
@@ -126,7 +126,7 @@
 
     }
     
-    autoCompleteTempFactory.$inject = ['$window', '$http'];
+    autoCompleteTempFactory.$inject = ['$window', '$http', '$rootScope'];
 
     /**
       * Handles map-temp directive's controller
@@ -232,7 +232,7 @@
       * @param {Object} $scope
       */
     function autoCompleteTempCtrl($scope) {
-        $scope.model = { label: '', name: $scope.name, show: 0 };
+        $scope.model = { label: '', name: $scope.nameofinput, show: 0 };
         $scope.fillInAdress = fillInAdress; 
     }
     
@@ -246,7 +246,7 @@
       * @param {Object} attrs
       * @param {Array} ctlrs
       */
-    function autoCompleteTempLink($scope, element, attrs, ctrls) {
+    function autoCompleteTempLink($scope, element, attrs, ctrls, $rootScope) {
 
         // Create autocomplete object
         $scope.autocomplete = new g.maps.places.Autocomplete(
@@ -257,12 +257,13 @@
         );
         
         $scope.element = element[0];
-        $scope.$parent[$scope['name']] = '';
-        $scope.$parent.$watch($scope['name'], function(newValue, oldValue) {
+        $rootScope[$scope['nameofinput']] = '';
+        $rootScope.$watch($scope['nameofinput'], function(newValue, oldValue) {
             console.log("Something is being changed");
+            console.log(arguments);
             if(newValue) $scope.element.value = newValue;
             return newValue;
-        }).bind($scope.$parent);
+        });//.bind($scope.$parent);
 
         // Attach an event into autocomplete
         g.maps.event.addListener($scope.autocomplete, 'place_changed', function() {
