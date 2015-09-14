@@ -15,8 +15,6 @@
                 
         $scope.handleMarkerDrop = function($Event, $Model, $AutoCompScope) {
             
-            $scope.location[$Model.name] = $Event.latLng;
-
             $Geocode.getNames({
                 coords: $Event.latLng
             }).then(function(results) {
@@ -75,11 +73,13 @@
     }
     
     function setModel() {
-        
         this.appName = "Google Maps API";
         
         // Set the model
-        this.location = {};
+        this.location = {
+            'pickUp': '',
+            'dropOff1': ''
+        };
     }
 
 }(angular));

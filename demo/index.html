@@ -20,23 +20,23 @@
             
             <div class="auto-complete-box">
 
-                <input class="" type="text" auto-complete-temp map="map" placeholder="Enter current location" onfill="setPickup" model="{name: 'pickUp', label: 'start_address', location: location}" ondrop="handleMarkerDrop">
+                <input class="" type="text" auto-complete-temp map="map" placeholder="Enter current location" onfill="setPickup($Position, $Model, $CoreModel)" model="{name: 'pickUp', label: 'start_address', location: location}" ondrop="handleMarkerDrop($Event, $Model, $AutoCompScope)">
 
             </div>
 
             <div class="auto-complete-box">
 
-                <input class="" type="text" auto-complete-temp  map="map" placeholder="Enter destination" onfill="setDropoff1" model="{name: 'dropOff1', label: 'end_address'}" ondrop="handleMarkerDrop">
+                <input class="" type="text" auto-complete-temp  map="map" placeholder="Enter destination" onfill="setDropoff1($Position, $Model, $CoreModel)" model="{name: 'dropOff1', label: 'end_address'}" ondrop="handleMarkerDrop($Event, $Model, $AutoCompScope)">
 
             </div>
 
-            <div class="map-container" map-temp configs="{id: 'main-map', lat: 13.740722, lng: 100.555531, markers: [{name: 'pickUp'}, {name: 'dropOff1'}, {name: 'dropOff2', show: 1}, {name: 'dropOff3', show: 1}, {name: 'dropOff4', show: 1}, {name: 'dropOff5', show: 1}, {name: 'dropOff6', show: 1}] }" ondirectionchange="handleDirectionChange"></div>
+            <div class="map-container" map-temp configs="{id: 'main-map', lat: 13.740722, lng: 100.555531, markers: [{name: 'pickUp'}, {name: 'dropOff1'}, {name: 'dropOff2', show: 1}, {name: 'dropOff3', show: 1}, {name: 'dropOff4', show: 1}, {name: 'dropOff5', show: 1}, {name: 'dropOff6', show: 1}] }" ondirectionchange="handleDirectionChange($Leg, done)"></div>
             
         </section>
 
         <!-- scripts -->
         <script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
-        <script src = "https://maps.googleapis.com/maps/api/js?key={Key}&libraries=places"></script>
+        <script src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyB3gQqZ-kMbG7FVaxX06IQ0E9ry_588Uco&libraries=places"></script>
         <script src = "../src/module.js"></script>
         <script src="../bower_components/ang-google-services/src/module.js"></script>
         <script src = "assets/js/main.module.js"></script>

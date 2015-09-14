@@ -12,17 +12,16 @@
                 $DirectionDisplay = new g.maps.DirectionsRenderer({
                     draggable: true
             });
-            
-            
+
             $DirectionDisplay.addListener('directions_changed', function(res) { 
                 
                 var $Directions = this.directions,
                     $Map = this.map,
                     $Leg = $Directions.routes[0].legs[0];
                 
-                if (typeof $Map.ondirectionchange == 'function') $Map.ondirectionchange($Leg, function($scope) {
+                if (typeof $Map.ondirectionchange == 'function') $Map.ondirectionchange({$Leg: $Leg, done: function($scope) {
                     if ($scope) $scope.$digest();
-                });
+                }});
 
             });
 
@@ -88,9 +87,8 @@
             link: mapTempLink,
             scope: {
                 id: "=id",
-                configs: "=configs",
-                oncenterchange: "=oncenterchange",
-                ondirectionchange: "=?ondirectionchange"
+                configs: "=?configs",
+                ondirectionchange: "&ondirectionchange"
             },
             template: '<div class="filter" ng-transclude=""></div>',
             transclude: true,
@@ -120,8 +118,8 @@
             scope: {
                 map: '=map',
                 model: '=model',
-                onfill: '=onfill',
-                ondrop: '=ondrop'
+                onfill: '&onfill',
+                ondrop: '&ondrop'
             }
 
         };
@@ -263,7 +261,6 @@
         $scope.$parent.$watch($scope.model['name'], function(newValue, oldValue) {
             $scope.element.value = newValue;
             return newValue;
-
         }).bind($scope.$parent);
 
         // Attach an event into autocomplete
@@ -347,20 +344,14 @@
         }
 
         $Self.model.marker.addListener('dragend', function($Event) {
-            if(typeof $Self.ondrop == 'function') $Self.ondrop($Event, $Self.model, $Self);
+            if(typeof $Self.ondrop == 'function') $Self.ondrop({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self});
             
         });       
-        
-        /*
-        $Self.model.marker.addListener('click', function($Event) {
-            handleMakerClick.call($Self, $Event);
-        });
-        */
         
         // Push a new marker into markers list
         appendMarker($Self.map.markers, $Self.model);
 
-        if(typeof $Self.onfill == 'function') $Self.onfill($Position, $Self.model, place, $Self.element);
+        if(typeof $Self.onfill == 'function') $Self.onfill({$Position: $Position, $Model: $Self.model, $CoreModel: place, $Element: $Self.element});
         
 
     }
