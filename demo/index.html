@@ -20,13 +20,13 @@
             
             <div class="auto-complete-box">
 
-                <input class="" type="text" auto-complete-temp map="map" placeholder="Enter current location" onfill="setPickup($Position, $Model, $CoreModel)" model="{name: 'pickUp', label: 'start_address', location: location}" ondrop="handleMarkerDrop($Event, $Model, $AutoCompScope)">
+                <input class="" type="text" auto-complete-temp map="map" placeholder="Enter current location" onfill="setPickup($Position, $Model, $CoreModel)" name="pickUp" ondrop="handleMarkerDrop($Event, $Model, $AutoCompScope)">
 
             </div>
 
             <div class="auto-complete-box">
-
-                <input class="" type="text" auto-complete-temp  map="map" placeholder="Enter destination" onfill="setDropoff1($Position, $Model, $CoreModel)" model="{name: 'dropOff1', label: 'end_address'}" ondrop="handleMarkerDrop($Event, $Model, $AutoCompScope)">
+                
+                                <input class="" type="text" auto-complete-temp map="map" placeholder="Enter current location" onfill="setDropoff1($Position, $Model, $CoreModel)" name="dropOff1" ondrop="handleMarkerDrop($Event, $Model, $AutoCompScope)">
 
             </div>
 

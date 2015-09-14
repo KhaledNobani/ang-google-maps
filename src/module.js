@@ -20,7 +20,7 @@
                     $Leg = $Directions.routes[0].legs[0];
                 
                 if (typeof $Map.ondirectionchange == 'function') $Map.ondirectionchange({$Leg: $Leg, done: function($scope) {
-                    if ($scope) $scope.$digest();
+                    if ($scope) $scope.$apply();
                 }});
 
             });
@@ -87,7 +87,7 @@
             link: mapTempLink,
             scope: {
                 id: "=id",
-                configs: "=?configs",
+                configs: "=",
                 ondirectionchange: "&ondirectionchange"
             },
             template: '<div class="filter" ng-transclude=""></div>',
@@ -117,7 +117,7 @@
             },
             scope: {
                 map: '=map',
-                model: '=model',
+                name: '@',
                 onfill: '&onfill',
                 ondrop: '&ondrop'
             }
@@ -232,8 +232,8 @@
       * @param {Object} $scope
       */
     function autoCompleteTempCtrl($scope) {
+        $scope.model = { label: '', name: $scope.name, show: 0 };
         $scope.fillInAdress = fillInAdress; 
-        $scope.model = $scope.model || {};        
     }
     
     autoCompleteTempCtrl.$inject = ['$scope'];
@@ -257,9 +257,10 @@
         );
         
         $scope.element = element[0];
-        $scope.$parent[$scope.model['name']] = '';
-        $scope.$parent.$watch($scope.model['name'], function(newValue, oldValue) {
-            $scope.element.value = newValue;
+        $scope.$parent[$scope['name']] = '';
+        $scope.$parent.$watch($scope['name'], function(newValue, oldValue) {
+            console.log("Something is being changed");
+            if(newValue) $scope.element.value = newValue;
             return newValue;
         }).bind($scope.$parent);
 
@@ -323,8 +324,8 @@
             $CtrlScope = this.$parent,
             $Self = this,
             $Position = GetPosition(lat, lng);
-        
-        if ( !($Self['model']) ) $Self.model = { label: '', name: '', show: 0 };
+                
+        console.log($Self.model);
         
         $Self.map.setCenter($Position);
 
