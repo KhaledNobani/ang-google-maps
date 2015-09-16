@@ -14,13 +14,14 @@
             });
 
             $DirectionDisplay.addListener('directions_changed', function(res) { 
-                
+                                
                 var $Directions = this.directions,
                     $Map = this.map,
-                    $Leg = $Directions.routes[0].legs[0];
+                    $Leg = $Directions.routes[0].legs[0],
+                    $ProcessedLeg = processLegs($Directions);
                 
-                if (typeof $Map.ondirectionchange == 'function') $Map.ondirectionchange({$Leg: $Leg, $parentScope: $rootScope});
-                
+                if (typeof $Map.ondirectionchange == 'function') $Map.ondirectionchange({$Leg: $ProcessedLeg, $parentScope: $rootScope, $Directions: $Directions});
+
                 $rootScope.$digest();
 
             });
@@ -33,7 +34,50 @@
         }])
         .directive('mapTemp', ['$window', '$document', '$http', mapTempFactory])
         .directive('autoCompleteTemp', ['$window', '$http', '$rootScope', autoCompleteTempFactory]);
+    
+    function processLegs($Directions) {
+        
+        var $Routes = $Directions.routes[0],
+            $Legs = $Routes.legs,
+            $Result = {waypoints: []};
+        
+        if (!$Legs.length) return $Results;
+        
+        $Result['current'] = {
+            coords: $Legs[0]['start_location'],
+            name: $Legs[0]['start_address']
+        };
+        
+        if ($Legs.length == 1) {
 
+            $Result['destination'] = {
+                coords: $Legs[0]['end_location'],
+                name: $Legs[0]['end_address']
+            }
+
+        } else {
+         
+            for (var index = 0, length = $Legs.length; index < length; index++) {
+                
+                if (index + 1 == length) { 
+                    $Result['destination'] = {
+                        coords: $Legs[index]['end_location'],
+                        name: $Legs[index]['end_address']
+                    };
+                } else {
+                    $Result['waypoints'].push($Legs[index]);
+                }
+
+            }
+            
+            $Result['waypoints'] = $Result['waypoints'].reverse();
+            
+        }
+        
+        return $Result;
+        
+    }
+    
     /**
       * Factory of google map's marker
       */
@@ -233,7 +277,7 @@
       */
     function autoCompleteTempCtrl($scope) {
         $scope.model = { label: '', name: $scope.nameofinput, show: 0 };
-        $scope.fillInAdress = fillInAdress; 
+        $scope.fillInAddress = fillInAddress; 
     }
     
     autoCompleteTempCtrl.$inject = ['$scope'];
@@ -259,15 +303,15 @@
         $scope.element = element[0];
         $rootScope[$scope['nameofinput']] = '';
         $rootScope.$watch($scope['nameofinput'], function(newValue, oldValue) {
-            console.log("Something is being changed");
-            console.log(arguments);
+            //console.log("Something is being changed");
+            //console.log(arguments);
             if(newValue) $scope.element.value = newValue;
             return newValue;
         });//.bind($scope.$parent);
 
         // Attach an event into autocomplete
         g.maps.event.addListener($scope.autocomplete, 'place_changed', function() {
-            $scope.fillInAdress();
+            $scope.fillInAddress();
         });
 
     }
@@ -317,14 +361,14 @@
 
     }
 
-    function fillInAdress() {
+    function fillInAddress() {
 
         var place = this.autocomplete.getPlace(),
-            lat = place.geometry.location.G,
-            lng = place.geometry.location.K,
+            lat = place.geometry.location.G || place.geometry.location.H,
+            lng = place.geometry.location.K || place.geometry.location.L,
             $CtrlScope = this.$parent,
             $Self = this,
-            $Position = GetPosition(lat, lng);
+            $Position = { lat: parseFloat(lat), lng: parseFloat(lng) };
                 
         console.log($Self.model);
         
@@ -387,7 +431,7 @@
         return {
 
             setRoute : function(options) {
-
+                                
                 if (options['map']) {
 
                     clearAllMarkers(options['map']);
@@ -396,14 +440,20 @@
 
                     $DirectionService.route({
 
-                        destination: options['destination'] || 0,
+                        destination: options['destination'] || '',
                         origin: options['current'] || 0,
-                        travelMode: google.maps.TravelMode.DRIVING
+                        provideRouteAlternatives : false,
+                        optimizeWaypoints : options['optimized'] || true,
+                        waypoints: options['dropOffs'] || [],
+                        travelMode: g.maps.TravelMode.DRIVING,
+                        unitSystem: g.maps.UnitSystem.IMPERIAL
 
                     }, function(response, status) {
 
                         if (status == g.maps.DirectionsStatus.OK) {
                             // Display the route on the map.
+                            console.log("Line 413");
+                            console.log(response);
                             $DirectionDisplay.setDirections(response);
                         }
 
