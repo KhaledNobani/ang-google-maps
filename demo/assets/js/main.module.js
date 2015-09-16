@@ -85,11 +85,11 @@
             $scope.location['pickUp'] = $Leg.current.coords;
             $scope.location[$scope.currentDestination] = $Leg.destination.coords;
             
-            $scope.updateWaypints($parentScope, $Leg.waypoints);
+            $scope.updateWaypoints($parentScope, $Leg.waypoints);
 
         };
         
-        $scope.updateWaypints = function($parentScope, $WayPoints) {
+        $scope.updateWaypoints = function($parentScope, $WayPoints) {
             
             var reversedWaypoints = $WayPoints.reverse();
             
