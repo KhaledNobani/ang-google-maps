@@ -79,6 +79,8 @@
             
             var $List = [];
             
+            console.log($scope.dropOffs);
+            
             ang.forEach($scope.dropOffs, function(value, key) {
                 
                 var isNameMatched = ( $scope.dropOffs[key]['name'] == $scope.currentDestination );
@@ -87,11 +89,8 @@
                     var $Data = ang.copy($scope.dropOffs[key]);
                     delete $Data['name'];
                     $List.push($Data);
-                } else {
-                    // Update on existed one
-                    $scope.dropOffs[key]['location'] = $scope.location[$scope.currentDestination];
                 }
-                
+
             });
                 
             return $List;
@@ -102,12 +101,13 @@
         
             if (!name) return;
             
+            // Update the modele
             $scope.currentDestination = name;
             $scope.waypoints = $scope.getWaypoints();
-
-            console.log($scope);
+            
             console.log($scope.waypoints);
             
+            // Start setting the location.
             $scope.setLocation();
             
         };
@@ -129,58 +129,81 @@
 
         };
         
+        $scope.updateDropOffs = function() {
+            
+            ang.forEach($scope.dropOffs, function(value, key) {
+                
+                var isNameMatched = $scope.dropOffs[key]['name'] == $scope.currentDestination;
+                                
+                if (isNameMatched) $scope.dropOffs[key]['location'] = $scope.location[$scope.currentDestination];
+                
+            });
+            
+        };
+        
         $scope.handleDirectionChange = function($Leg, $parentScope, $Directions) {
 
             console.log('Handle on change');
-            console.log(arguments);
-
+            
+            console.log($Leg);
+            
             $parentScope['pickUp'] = $scope['pickUp'] = $Leg.current.name;
             $parentScope[$scope.currentDestination] = $scope[$scope.currentDestination] = $Leg.destination.name;
             $scope.location['pickUp'] = $Leg.current.coords;
             $scope.location[$scope.currentDestination] = $Leg.destination.coords;
             
-            $scope.updateWaypoints($parentScope, $Leg.waypoints);
+            console.log("Before Updating dropoffs");
+            console.log($scope.dropOffs);
+            
+            $scope.updateWaypoints($parentScope, $Leg, $Leg.waypoints);
 
         };
         
-        $scope.updateWaypoints = function($parentScope, $WayPoints) {
-            
-            var reversedWaypoints = $WayPoints.reverse();
-            
-            console.log($scope);
-            console.log(reversedWaypoints);
-            
-            ang.forEach($scope.dropOffs, function(value, key) {
-                
-                var isNameEqual = $scope.dropOffs[key]['name'] == $scope.currentDestination,
-                    isLastIndex = key + 1 == $scope.dropOffs.length,
-                    name = undefined,
-                    addressName = undefined;
-                
-                if (!isLastIndex) {
-                    
-                    if (isNameEqual) {
-                        //console.log("Yes, Gotcha");
-                        $scope.dropOffs[key+1]['location'] = reversedWaypoints[key]['end_location'];
-                        name = $scope.dropOffs[key+1]['name'];
-                        //console.log($WayPoints[key]);
-                    } else {
-                        //console.log("Not Yet");
-                        //console.log($scope.dropOffs[key]);
-                        $scope.dropOffs[key]['location'] = reversedWaypoints[key]['end_location'];
-                        name = $scope.dropOffs[key]['name'];
-                        
-                        //console.log($WayPoints[key]);
-                    }
-                    
-                    addressName = $WayPoints[key]['end_address'];
+        $scope.updateWaypoints = function($parentScope, $Leg, $WayPoints) {
 
+            console.log("Line 167");
+            console.log($scope.dropOffs);
+            console.log($WayPoints);
+            //return;
+            
+            if (!$scope.waypoints.length) return;
+            
+            for (var key = 0, length = $scope.dropOffs.length; key < length; key++) {
+                
+                var isNameEqual = $scope.dropOffs[key]['name'] == $scope.currentDestination;
+                
+                if (isNameEqual) { 
+                    
+                    $scope.dropOffs[key]['location'] = $Leg.destination.coords;
+                    console.log('Skipping');
+                    continue;
+                    
                 }
                 
-                if(name && addressName) $parentScope[name] = $scope[name] = addressName;
+                (function(index) {
+                 
+                    var waypointIndex = ($WayPoints[index-1]) ? index-1 : index;
 
-            });
+                    console.log("waypointIndex " + waypointIndex);
+                    console.log("dropOffIndex " + index);
+
+                    console.log("Before change : ");
+                    console.log($scope.dropOffs[index]['location']);
+                  
+                    // Set the end_location into the dropOff
+                    $scope.dropOffs[index]['location'] = ang.copy($WayPoints[waypointIndex]['end_location']);
+                    // Set the name
+                    $parentScope[$scope.dropOffs[index]['name']] = $WayPoints[waypointIndex]['end_address'];
+
+                    
+                    console.log("After change : " + $scope.dropOffs[index]['location'].toString());
+
+                }(key));
+
+            }
             
+            console.log($scope.dropOffs);
+
         };
 
     }

@@ -41,18 +41,24 @@
             $Legs = $Routes.legs,
             $Result = {waypoints: []};
         
+        console.log($Legs);
+
         if (!$Legs.length) return $Results;
         
         $Result['current'] = {
             coords: $Legs[0]['start_location'],
-            name: $Legs[0]['start_address']
+            name: $Legs[0]['start_address'],
+            next_coords: $Legs[0]['end_location'],
+            next_name: $Legs[0]['end_address']
         };
         
         if ($Legs.length == 1) {
 
             $Result['destination'] = {
                 coords: $Legs[0]['end_location'],
-                name: $Legs[0]['end_address']
+                name: $Legs[0]['end_address'],
+                prev_coords: $Legs[0]['start_location'],
+                prev_name: $Legs[0]['start_address']
             }
 
         } else {
@@ -62,7 +68,9 @@
                 if (index + 1 == length) { 
                     $Result['destination'] = {
                         coords: $Legs[index]['end_location'],
-                        name: $Legs[index]['end_address']
+                        name: $Legs[index]['end_address'],
+                        prev_coords: $Legs[index]['start_location'],
+                        prev_name: $Legs[index]['start_address']
                     };
                 } else {
                     $Result['waypoints'].push($Legs[index]);
