@@ -207,6 +207,10 @@
         $scope.mapContainer = $scope.createMapContainer();
 
         element[0].appendChild($scope.mapContainer);
+        
+        // Define Methods
+        $scope.renderWithGeolocation = renderWithGeolocation;
+        $scope.renderWithDefault = renderWithDefault;
 
         initMap.call($scope, element);
 
@@ -230,16 +234,12 @@
         return div;
 
     }
-
-    /**
-      * Initializes Google map into map's content.
-      *
-      */
-    function initMap(element) {
-        
-        this.mapOptions['disableDefaultUI'] = true;
+    
+    function initMapModel() {
         
         this.$parent.map = this.map = new g.maps.Map(this.mapContainer, this.mapOptions);
+               
+        this.mapOptions['disableDefaultUI'] = true;
         
         this.map.markers = [];
         this.map.id = this.configs.id;
@@ -260,6 +260,42 @@
         this.initMarkers();
 
         attachMapEvents.call(this);
+        
+    }
+    
+    function renderWithGeolocation($Position) {
+        this.map.setCenter({
+            lat: $Position.coords.latitude,
+            lng: $Position.coords.longitude
+        });
+    }
+    
+    function renderWithDefault($Error) {
+        this.map.setCenter({
+            lat: 13.736717 ,
+            lng: 100.523186
+        });
+    }
+    
+    /**
+      * Initializes Google map into map's content.
+      *
+      */
+    function initMap(element) {
+        
+        var $Obj = this;
+    
+        if ('geolocation' in navigator) {
+            
+            navigator.geolocation.getCurrentPosition(function($Position) {
+                $Obj.renderWithGeolocation($Position); 
+            }, function($Error) {
+                $Obj.renderWithDefault($Error);
+            });
+            
+        }
+
+        initMapModel.call($Obj);
 
     }
 
@@ -369,9 +405,7 @@
             $CtrlScope = this.$parent,
             $Self = this,
             $Position = { lat: parseFloat(lat), lng: parseFloat(lng) };
-                
-        console.log($Self.model);
-        
+    
         $Self.map.setCenter($Position);
 
         // Drop pin

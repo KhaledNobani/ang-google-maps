@@ -32,11 +32,6 @@
         $scope.dropOffs = [];
         $scope.waypoints = [];
         $scope.location = {};
-        
-        // Methods
-        $scope.manageDropOffs = function() {
-            manageDropOffs.call($scope, $filter);   
-        };
 
         $scope.handleMarkerDrop = function($Event, $Model, $AutoCompScope) {
 
@@ -53,7 +48,66 @@
         $scope.setPickup = function($Position, $Model, $CoreModel) {
             
             $scope.location['pickUp'] = $Position;
-            $scope.manageDropOffs();
+            $scope.setLocation();
+            
+        };
+        
+        $scope.setDropoff = function($Position, $Model, $CoreModel, name) {
+
+            $scope.location[name] = $Position;
+
+            var index = $filter('getByName')($scope.dropOffs, name),
+                $WayPoint = {
+                    name: name,
+                    location: $Position
+            },
+                $PointInfo = ang.copy($WayPoint),
+                $InsertedEle = 0;
+                        
+            if(index == -1) { 
+                $InsertedEle = $scope.dropOffs.push($PointInfo);
+            } else {
+                $scope.dropOffs[index] = $PointInfo;
+            }
+
+            $scope.waypoints = $scope.getWaypoints();            
+            $scope.setLocation();
+            
+        };
+
+        $scope.getWaypoints = function() {
+            
+            var $List = [];
+            
+            ang.forEach($scope.dropOffs, function(value, key) {
+                
+                var isNameMatched = ( $scope.dropOffs[key]['name'] == $scope.currentDestination );
+                
+                if (!isNameMatched) {
+                    var $Data = ang.copy($scope.dropOffs[key]);
+                    delete $Data['name'];
+                    $List.push($Data);
+                } else {
+                    // Update on existed one
+                    $scope.dropOffs[key]['location'] = $scope.location[$scope.currentDestination];
+                }
+                
+            });
+                
+            return $List;
+            
+        };
+                
+        $scope.setCurrentDestination = function(name) {
+        
+            if (!name) return;
+            
+            $scope.currentDestination = name;
+            $scope.waypoints = $scope.getWaypoints();
+
+            console.log($scope);
+            console.log($scope.waypoints);
+            
             $scope.setLocation();
             
         };
@@ -93,6 +147,9 @@
             
             var reversedWaypoints = $WayPoints.reverse();
             
+            console.log($scope);
+            console.log(reversedWaypoints);
+            
             ang.forEach($scope.dropOffs, function(value, key) {
                 
                 var isNameEqual = $scope.dropOffs[key]['name'] == $scope.currentDestination,
@@ -103,13 +160,13 @@
                 if (!isLastIndex) {
                     
                     if (isNameEqual) {
-                        console.log("Yes, Gotcha");
+                        //console.log("Yes, Gotcha");
                         $scope.dropOffs[key+1]['location'] = reversedWaypoints[key]['end_location'];
                         name = $scope.dropOffs[key+1]['name'];
                         //console.log($WayPoints[key]);
                     } else {
-                        console.log("Not Yet");
-                        console.log($scope.dropOffs[key]);
+                        //console.log("Not Yet");
+                        //console.log($scope.dropOffs[key]);
                         $scope.dropOffs[key]['location'] = reversedWaypoints[key]['end_location'];
                         name = $scope.dropOffs[key]['name'];
                         
@@ -123,9 +180,6 @@
                 if(name && addressName) $parentScope[name] = $scope[name] = addressName;
 
             });
-            
-            console.log($scope.dropOffs);
-            console.log($WayPoints);
             
         };
 
@@ -147,43 +201,5 @@
         
     }
 
-    function manageDropOffs($filter) {
-
-        var $scope = this;
-                
-        $scope.setDropoff = function($Position, $Model, $CoreModel, name) {
-
-            $scope.location[name] = $Position;
-
-            var index = $filter('getByName')($scope.dropOffs, name),
-                $WayPoint = {
-                    name: name,
-                    location: $Position
-            },
-                $PointInfo = ang.copy($WayPoint),
-                $InsertedEle = 0;
-                        
-            if(index == -1) { 
-                $InsertedEle = $scope.dropOffs.push($PointInfo);
-            } else {
-                $scope.dropOffs[index] = $PointInfo;
-            }
-
-            $scope.waypoints = reShapeWaypoints($scope.dropOffs);
-            
-            var currentIndex = (index != -1) ? index : ($InsertedEle == 0) ? 0 : ($InsertedEle - 1); 
-            
-            console.log("currentIndex = " + currentIndex);
-            console.log($scope);
-            
-            if ($scope.dropOffs[currentIndex]['name'] == $scope.currentDestination) {
-                $scope.waypoints.splice(currentIndex, 1);
-            }
-            
-            $scope.setLocation();
-            
-        };
-        
-    }
 
 }(angular));
