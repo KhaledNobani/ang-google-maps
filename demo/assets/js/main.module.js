@@ -113,7 +113,9 @@
         };
         
         $scope.setLocation = function($Position, $Model, $CoreModel) {
-
+            
+            console.log($scope.location[$scope.currentDestination]);
+            
             var current = $scope.location['pickUp'],
                 destination = $scope.location[$scope.currentDestination];
 
@@ -153,18 +155,13 @@
             $scope.location[$scope.currentDestination] = $Leg.destination.coords;
             
             console.log("Before Updating dropoffs");
-            console.log($scope.dropOffs);
+            console.log(JSON.stringify($scope.dropOffs));
             
             $scope.updateWaypoints($parentScope, $Leg, $Leg.waypoints);
 
         };
         
         $scope.updateWaypoints = function($parentScope, $Leg, $WayPoints) {
-
-            console.log("Line 167");
-            console.log($scope.dropOffs);
-            console.log($WayPoints);
-            //return;
             
             if (!$scope.waypoints.length) return;
             
@@ -175,6 +172,7 @@
                 if (isNameEqual) { 
                     
                     $scope.dropOffs[key]['location'] = $Leg.destination.coords;
+                    console.log($scope.dropOffs[key]['location']);
                     console.log('Skipping');
                     continue;
                     
@@ -195,14 +193,13 @@
                     // Set the name
                     $parentScope[$scope.dropOffs[index]['name']] = $WayPoints[waypointIndex]['end_address'];
 
-                    
                     console.log("After change : " + $scope.dropOffs[index]['location'].toString());
 
                 }(key));
 
             }
-            
-            console.log($scope.dropOffs);
+
+            console.log(JSON.stringify($scope.dropOffs));
 
         };
 

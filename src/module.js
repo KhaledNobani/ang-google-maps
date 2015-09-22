@@ -10,16 +10,24 @@
 
             var $DirectionService = new g.maps.DirectionsService,
                 $DirectionDisplay = new g.maps.DirectionsRenderer({
-                    draggable: true
+                    draggable: true,
+                    hideRouteList: true,
+                    markerOptions: {
+                        crossOnDrag: false
+                    }
             });
-
+            
+            console.log($DirectionDisplay);
+            
             $DirectionDisplay.addListener('directions_changed', function(res) { 
-                                
+                
+                console.log(this);
+                
                 var $Directions = this.directions,
                     $Map = this.map,
                     $Leg = $Directions.routes[0].legs[0],
                     $ProcessedLeg = processLegs($Directions);
-                
+
                 if (typeof $Map.ondirectionchange == 'function') $Map.ondirectionchange({$Leg: $ProcessedLeg, $parentScope: $rootScope, $Directions: $Directions});
 
                 $rootScope.$digest();
@@ -39,7 +47,7 @@
         
         var $Routes = $Directions.routes[0],
             $Legs = $Routes.legs,
-            $Result = {waypoints: []};
+            $Result = {waypoints: [], totalDuration: 0, totalDistance: 0};
         
         console.log($Legs);
 
@@ -60,11 +68,14 @@
                 prev_coords: $Legs[0]['start_location'],
                 prev_name: $Legs[0]['start_address']
             }
+            
+            $Result['totalDistance'] += $Legs[0]['distance']['value'];
+            $Result['totalDuration'] += $Legs[0]['duration']['value'];
 
         } else {
          
             for (var index = 0, length = $Legs.length; index < length; index++) {
-                
+
                 if (index + 1 == length) { 
                     $Result['destination'] = {
                         coords: $Legs[index]['end_location'],
@@ -76,8 +87,11 @@
                     $Result['waypoints'].push($Legs[index]);
                 }
 
+                $Result['totalDistance'] += $Legs[index]['distance']['value'];
+                $Result['totalDuration'] += $Legs[index]['duration']['value'];
+
             }
-            
+
             $Result['waypoints'] = $Result['waypoints'].reverse();
             
         }
@@ -464,7 +478,7 @@
         this.$InfoWindow.open(this.map, this.model.marker);
         
     }
-    
+  
     function Direction(configs) {
 
         var $DirectionService = configs['$DirectionService'],

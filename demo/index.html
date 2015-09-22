@@ -37,7 +37,7 @@
                     <input class="" type="text" auto-complete-temp map="map" placeholder="Enter current location" onfill="setDropoff($Position, $Model, $CoreModel, 'dropOff2')" nameofinput="dropOff2" ondrop="handleMarkerDrop($Event, $Model, $AutoCompScope)" ng-click="setCurrentDestination('dropOff2')">
 
             </div>
-            
+
             <div class="auto-complete-box">
 
                     <input class="" type="text" auto-complete-temp map="map" placeholder="Enter current location" onfill="setDropoff($Position, $Model, $CoreModel, 'dropOff3')" nameofinput="dropOff3" ondrop="handleMarkerDrop($Event, $Model, $AutoCompScope)" ng-click="setCurrentDestination('dropOff3')">
@@ -56,7 +56,7 @@
 
         <!-- scripts -->
         <script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
-        <script src = "https://maps.googleapis.com/maps/api/js?key=Key&libraries=places"></script>
+        <script src = "https://maps.googleapis.com/maps/api/js?key={{KEY}}&libraries=places"></script>
         <script src = "../src/module.js"></script>
         <script src="../bower_components/ang-google-services/src/module.js"></script>
         <script src = "assets/js/main.module.js"></script>
