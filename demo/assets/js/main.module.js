@@ -32,7 +32,81 @@
         $scope.dropOffs = [];
         $scope.waypoints = [];
         $scope.location = {};
+        $scope.currentMarker = 'pickUp';
+        $scope.$MarkerList = ['pickUp', 'dropOff1', 'dropOff2', 'dropOff3', 'dropOff4'];
+        
+        $scope.setInputFieldForMarker = function($Event, currentMarkerName) {
+            
+            // Get the name of current location
+            $Geocode.getNames({coords: $Event.latLng})
+                .then(function(res) {
+                    console.log(res);
+                    if ($scope["O" + currentMarkerName]) $scope["O" + currentMarkerName].value = res[0].formatted_address;
 
+                }, function(err) {
+
+                    console.error(err);
+
+            });
+            
+        };
+
+        $scope.handleMapClick = function($Coords, $Pixel, $Za) {
+            
+            console.log("Handle on map click");
+            if ($scope.$MarkerList[0] != $scope.currentMarker) return new Error("Can't create a marker.");
+            
+            console.log("Proceeding");
+            
+            var currentMarkerName = $scope.currentMarker;
+            
+            $scope.map.addingMarker({
+                name: 'pickUp',
+                ondragend: function($Event) {
+                    $scope.setInputFieldForMarker($Event, currentMarkerName);
+                },
+                oninit: function($Event) {
+                    $scope.setInputFieldForMarker($Event, currentMarkerName);
+                },
+                $inputEle: $scope["O" + window.currentMarker],
+                position: $Coords
+            });
+            
+            $scope.$MarkerList.splice(0, 1);
+
+            /*
+            console.log($Coords);
+            
+            var $Marker = new google.maps.Marker({
+                position: $Coords,
+                title: "Test",
+                draggable: true
+            });
+            
+            console.log($scope["O" + window.currentMarker]);
+            
+            $Marker.addListener('dragend', function($Event) {
+                console.log($Event);
+                
+                // Get the name of current location
+                $Geocode.getNames({coords: $Event.latLng})
+                    .then(function(res) {
+                        
+                        console.log(res);
+                        if ($scope["O" + window.currentMarker]) $scope["O" + window.currentMarker].value = res[0].formatted_address;
+                    
+                    }, function(err) {
+                    
+                        console.error(err);
+
+                });
+            });
+            
+            $Marker.setMap($scope.map);
+            */
+            
+        };
+            
         $scope.handleMarkerDrop = function($Event, $Model, $AutoCompScope) {
 
             $Geocode.getNames({
@@ -103,6 +177,7 @@
             
             // Update the modele
             $scope.currentDestination = name;
+            $scope.currentMarker = name;
             $scope.waypoints = $scope.getWaypoints();
             
             console.log($scope.waypoints);
@@ -147,7 +222,7 @@
 
             console.log('Handle on change');
             
-            console.log($Leg);
+            console.log(arguments);
             
             $parentScope['pickUp'] = $scope['pickUp'] = $Leg.current.name;
             $parentScope[$scope.currentDestination] = $scope[$scope.currentDestination] = $Leg.destination.name;
