@@ -154,7 +154,8 @@
             scope: {
                 id: "=id",
                 configs: "=",
-                ondirectionchange: "&ondirectionchange"
+                ondirectionchange: "&ondirectionchange",
+                onmapclick: "&onmapclick",
             },
             template: '<div class="filter" ng-transclude=""></div>',
             transclude: true,
@@ -259,13 +260,14 @@
     
     function initMapModel() {
         
-        this.$parent.map = this.map = new g.maps.Map(this.mapContainer, this.mapOptions);
+        window.map = this.$parent.map = this.map = new g.maps.Map(this.mapContainer, this.mapOptions);
                
         this.mapOptions['disableDefaultUI'] = true;
         
         this.map.markers = [];
         this.map.id = this.configs.id;
         this.map.location = {};
+        this.map.addingMarker = addingMarker;
         this.map.ondirectionchange = this.ondirectionchange || undefined;
         //this.map.location = 
         
@@ -324,7 +326,19 @@
     // For incoming features
     function attachMapEvents() {
         
-        var self = this;
+        var $Self = this;
+        
+        $Self.map.addListener('click', function($Event) {
+            
+            console.log("Clicking on the map");
+            $Self.onmapclick({
+                $Coords: $Event.latLng,
+                $Pixel: $Event.pixel,
+                $Za: $Event.za,
+                $Event: $Event
+            })
+            
+        });
         
     }
 
@@ -358,14 +372,14 @@
             { type: 'geocode' }
         );
         
-        $scope.element = element[0];
+        $scope.element = $scope.$parent["O" + $scope['nameofinput']]= element[0];
         $rootScope[$scope['nameofinput']] = '';
         $rootScope.$watch($scope['nameofinput'], function(newValue, oldValue) {
             //console.log("Something is being changed");
             //console.log(arguments);
             if(newValue) $scope.element.value = newValue;
             return newValue;
-        });//.bind($scope.$parent);
+        });
 
         // Attach an event into autocomplete
         g.maps.event.addListener($scope.autocomplete, 'place_changed', function() {
@@ -520,6 +534,43 @@
             }
 
         };
+        
+    }
+        
+    /**
+      * Adds marker into map
+      *
+      * @param {Options}
+      */
+    function addingMarker(options) {
+        
+        console.log(options);
+        
+        var options = options || {},
+            isOnDragEndFunc = (typeof options['ondragend'] == 'function'),
+            isOnInitFunc = (typeof options['oninit'] == 'function'),
+            $Marker = new g.maps.Marker({
+                position: options['position'],
+                draggable: true
+            }),
+            model = { name: options['name'] };
+        
+        if (!$Marker.position) throw new Error("Ops, the position is not being passed")
+        
+        if (!model['name']) throw new Error('Please provide the name for the marker');
+        
+        if (isOnInitFunc) options['oninit']({latLng: options['position']}, $Marker);
+        
+        // Attach marker into the map
+        $Marker.setMap(this);
+        
+        appendMarker(this.markers, model);
+        
+        if(isOnDragEndFunc) $Marker.addListener('dragend', function($Event) {
+            
+            options['ondragend']($Event);
+            
+        });
         
     }
 
