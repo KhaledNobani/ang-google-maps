@@ -557,7 +557,7 @@
                 position: options['position'],
                 draggable: true
             }),
-            model = { name: options['name'] };
+            model = { name: options['name'], marker: $Marker };
         
         if (!$Marker.position) throw new Error("Ops, the position is not being passed")
         
