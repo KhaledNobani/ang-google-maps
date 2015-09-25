@@ -41,7 +41,7 @@
             $Geocode.getNames({coords: $Event.latLng})
                 .then(function(res) {
                     console.log(res);
-                    if ($scope["O" + currentMarkerName]) $scope["O" + currentMarkerName].value = res[0].formatted_address;
+                    if ($scope.map["O" + currentMarkerName]) $scope.map["O" + currentMarkerName].value = res[0].formatted_address;
 
                 }, function(err) {
 
@@ -52,12 +52,10 @@
         };
 
         $scope.handleMapClick = function($Coords, $Pixel, $Za) {
-            
+        
             console.log("Handle on map click");
             if ($scope.$MarkerList[0] != $scope.currentMarker) return new Error("Can't create a marker.");
-            
-            console.log("Proceeding");
-            
+
             var currentMarkerName = $scope.currentMarker;
             
             $scope.map.addingMarker({
@@ -68,7 +66,7 @@
                 oninit: function($Event) {
                     $scope.setInputFieldForMarker($Event, currentMarkerName);
                 },
-                $inputEle: $scope["O" + window.currentMarker],
+                $inputEle: $scope.map["O" + $scope.currentMarker],
                 position: $Coords
             });
             

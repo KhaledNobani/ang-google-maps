@@ -372,7 +372,7 @@
             { type: 'geocode' }
         );
         
-        $scope.element = $scope.$parent["O" + $scope['nameofinput']]= element[0];
+        $scope.element = element[0];        
         $rootScope[$scope['nameofinput']] = '';
         $rootScope.$watch($scope['nameofinput'], function(newValue, oldValue) {
             //console.log("Something is being changed");
@@ -380,6 +380,10 @@
             if(newValue) $scope.element.value = newValue;
             return newValue;
         });
+        
+        setTimeout(function() {
+            $scope.map["O" + $scope['nameofinput']] = $scope.element;
+        }, 1);
 
         // Attach an event into autocomplete
         g.maps.event.addListener($scope.autocomplete, 'place_changed', function() {
