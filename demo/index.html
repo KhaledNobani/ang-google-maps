@@ -31,7 +31,7 @@
             </div>
 
             <div class="map-container" map-temp configs="{id: 'main-map', lat: 13.740722, lng: 100.555531, markers: [{name: 'pickUp'}, {name: 'dropOff1'}, {name: 'dropOff2', show: 1}, {name: 'dropOff3', show: 1}, {name: 'dropOff4', show: 1}, {name: 'dropOff5', show: 1}, {name: 'dropOff6', show: 1}] }" ondirectionchange="handleDirectionChange($Leg, $parentScope, $Directions)" onmapclick="handleMapClick($Coords, $Pixel, $Za, $Event)"></div>
-            
+
             <div class="auto-complete-box">
 
                     <input class="" type="text" auto-complete-temp map="map" placeholder="Enter current location" onfill="setDropoff($Position, $Model, $CoreModel, 'dropOff2')" nameofinput="dropOff2" ondrop="handleMarkerDrop($Event, $Model, $AutoCompScope)" ng-click="setCurrentDestination('dropOff2')">
@@ -43,7 +43,7 @@
                     <input class="" type="text" auto-complete-temp map="map" placeholder="Enter current location" onfill="setDropoff($Position, $Model, $CoreModel, 'dropOff3')" nameofinput="dropOff3" ondrop="handleMarkerDrop($Event, $Model, $AutoCompScope)" ng-click="setCurrentDestination('dropOff3')">
 
             </div>
-            
+
             <div class="auto-complete-box">
 
                 <input class="" type="text" auto-complete-temp map="map" placeholder="Enter current location" onfill="setDropoff($Position, $Model, $CoreModel, 'dropOff4')" nameofinput="dropOff4" ondrop="handleMarkerDrop($Event, $Model, $AutoCompScope)" ng-click="setCurrentDestination('dropOff4')">
@@ -56,7 +56,7 @@
 
         <!-- scripts -->
         <script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
-        <script src = "https://maps.googleapis.com/maps/api/js?key={Key}&libraries=places"></script>
+        <script src = "https://maps.googleapis.com/maps/api/js?key={{Key}}&libraries=places"></script>
         <script src = "../src/module.js"></script>
         <script src="../bower_components/ang-google-services/src/module.js"></script>
         <script src = "assets/js/main.module.js"></script>
