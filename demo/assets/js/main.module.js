@@ -61,7 +61,7 @@
             var currentMarkerName = $scope.currentMarker;
             
             $scope.map.addingMarker({
-                name: 'pickUp',
+                name: currentMarkerName || '',
                 ondragend: function($Event) {
                     $scope.setInputFieldForMarker($Event, currentMarkerName);
                 },
@@ -73,37 +73,6 @@
             });
             
             $scope.$MarkerList.splice(0, 1);
-
-            /*
-            console.log($Coords);
-            
-            var $Marker = new google.maps.Marker({
-                position: $Coords,
-                title: "Test",
-                draggable: true
-            });
-            
-            console.log($scope["O" + window.currentMarker]);
-            
-            $Marker.addListener('dragend', function($Event) {
-                console.log($Event);
-                
-                // Get the name of current location
-                $Geocode.getNames({coords: $Event.latLng})
-                    .then(function(res) {
-                        
-                        console.log(res);
-                        if ($scope["O" + window.currentMarker]) $scope["O" + window.currentMarker].value = res[0].formatted_address;
-                    
-                    }, function(err) {
-                    
-                        console.error(err);
-
-                });
-            });
-            
-            $Marker.setMap($scope.map);
-            */
             
         };
             
