@@ -589,7 +589,7 @@
         var options = options || {},
             isOnDragEndFunc = (typeof options['ondragend'] == 'function'),
             isOnInitFunc = (typeof options['oninit'] == 'function'),
-            isOnClickFunc = (typeof options['ondragend'] == 'function'),
+            isOnClickFunc = (typeof options['onclick'] == 'function'),
             $Marker = new g.maps.Marker({
                 path: 0,
                 position: options['position'],
