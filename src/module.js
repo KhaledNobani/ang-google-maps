@@ -1,5 +1,8 @@
 (function(ang, g) {
-
+    
+    var Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        labelIndex = 0;
+    
     'use strict';
     ang.module('ang-google-maps', [])
         .factory('Map', function() { return MapFactory; })
@@ -12,9 +15,8 @@
                 $DirectionDisplay = new g.maps.DirectionsRenderer({
                     draggable: true,
                     hideRouteList: true,
-                    markerOptions: {
-                        crossOnDrag: false
-                    }
+                    suppressMarkers: true
+                    //infoWindow: new google.maps.InfoWindow
             });
             
             console.log($DirectionDisplay);
@@ -27,7 +29,10 @@
                     $Map = this.map,
                     $Leg = $Directions.routes[0].legs[0],
                     $ProcessedLeg = processLegs($Directions);
-
+                
+                console.log("$Directions");
+                console.log($Directions);
+                
                 if (typeof $Map.ondirectionchange == 'function') $Map.ondirectionchange({$Leg: $ProcessedLeg, $parentScope: $rootScope, $Directions: $Directions});
 
                 $rootScope.$digest();
@@ -120,11 +125,14 @@
     function GetMarker(options) {
 
         return new g.maps.Marker({
+            animation: google.maps.Animation.DROP,
             map: options['map'] || null,
             draggable: true,
             animation: google.maps.Animation.DROP || '',
             title: options['title'] || '',
-            position: { lat: options['lat'], lng: options['lng'] }
+            label: options['label'] || '',
+            position: { lat: options['lat'], lng: options['lng'] },
+            fillColor: '#cc1'
         });
 
     };
@@ -429,11 +437,14 @@
     
     function appendMarker(List, model) {
         
-        var position = findInList(List || [], {key: 'name', value: model['name']});
+        var position = findInList(List || [], {key: 'name', value: model['name']}),
+            index = position;
 
         if (position != undefined) {
             List[position] = extendObj(List[position], model);
-        } else { List.push(model); }
+        } else { List.push(model); index = List.length - 1;}
+        
+        return index;
 
     }
 
@@ -444,29 +455,38 @@
             lng = place.geometry.location.K || place.geometry.location.L,
             $CtrlScope = this.$parent,
             $Self = this,
-            $Position = { lat: parseFloat(lat), lng: parseFloat(lng) };
-    
-        $Self.map.setCenter($Position);
+            $Position = { lat: parseFloat(lat), lng: parseFloat(lng) },
+            indexOfMarker = findByName($Self.map.markers, $Self['model']['name']);
+
+        $Self.map.panTo($Position);
 
         // Drop pin
-        if(!$Self.model.marker) {
-            $Self.model.marker = GetMarker({
+        if(!$Self.map.markers[indexOfMarker]['marker']) {
+            $Self.map.markers[indexOfMarker]['marker'] = GetMarker({
+                animation: google.maps.Animation.DROP,
                 map: $Self.map,
                 lat: lat,
                 lng: lng,
-                title: $Self['model']['name']
+                label: Characters[indexOfMarker]
             });
         } else {
-            $Self.model.marker.setPosition({
+            $Self.map.markers[indexOfMarker]['marker'].setPosition({
                 lat: lat,
                 lng: lng
             });   
         }
+        
+        var $Marker = $Self.map.markers[indexOfMarker]['marker'];
+        
+        console.log($Marker);
 
-        $Self.model.marker.addListener('dragend', function($Event) {
+        $Marker.addListener('dragend', function($Event) {
             if(typeof $Self.ondrop == 'function') $Self.ondrop({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self});
-            
-        });       
+        });
+        
+        $Marker.addListener('click', function($Event) {
+            console.log("Marker has been clicked"); 
+        });
         
         // Push a new marker into markers list
         appendMarker($Self.map.markers, $Self.model);
@@ -496,19 +516,33 @@
         this.$InfoWindow.open(this.map, this.model.marker);
         
     }
-  
+    
+    function findByName(list, name) {
+        
+        var list = list || [];
+        
+        for (var index = 0, length = list.length; index < length; index++) {
+            
+            if (list[index]['name'] == name) return index;
+            
+        }
+        
+        return -1;
+        
+    }
+
     function Direction(configs) {
 
         var $DirectionService = configs['$DirectionService'],
             $DirectionDisplay = configs['$DirectionDisplay'];
-        
+
         return {
 
             setRoute : function(options) {
-                                
+
                 if (options['map']) {
 
-                    clearAllMarkers(options['map']);
+                    //clearAllMarkers(options['map']);
 
                     if (!$DirectionDisplay.getMap()) $DirectionDisplay.setMap(options['map']);
 
@@ -516,9 +550,11 @@
 
                         destination: options['destination'] || '',
                         origin: options['current'] || 0,
-                        provideRouteAlternatives : false,
+                        provideRouteAlternatives : true,
                         optimizeWaypoints : options['optimized'] || true,
                         waypoints: options['dropOffs'] || [],
+                        avoidHighways: true,
+                        avoidTolls: true,
                         travelMode: g.maps.TravelMode.DRIVING,
                         unitSystem: g.maps.UnitSystem.IMPERIAL
 
@@ -532,13 +568,13 @@
                         }
 
                     });
-                    
+
                 }
-                
+
             }
 
         };
-        
+
     }
         
     /**
@@ -553,9 +589,12 @@
         var options = options || {},
             isOnDragEndFunc = (typeof options['ondragend'] == 'function'),
             isOnInitFunc = (typeof options['oninit'] == 'function'),
+            isOnClickFunc = (typeof options['ondragend'] == 'function'),
             $Marker = new g.maps.Marker({
+                path: 0,
                 position: options['position'],
-                draggable: true
+                draggable: true,
+                animation: google.maps.Animation.DROP
             }),
             model = { name: options['name'], marker: $Marker };
         
@@ -568,12 +607,16 @@
         // Attach marker into the map
         $Marker.setMap(this);
         
-        appendMarker(this.markers, model);
+        var indexOfMarker = appendMarker(this.markers, model);
+        this.markers[indexOfMarker]['marker'].setLabel(Characters[indexOfMarker]);
         
         if(isOnDragEndFunc) $Marker.addListener('dragend', function($Event) {
-            
             options['ondragend']($Event);
-            
+        });
+        
+        if(isOnClickFunc) $Marker.addListener('click', function($Event) {
+             //console.log('Clicking on the marker');
+            options['onclick']($Event);
         });
         
     }

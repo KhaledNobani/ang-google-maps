@@ -31,6 +31,7 @@
         $scope.currentDestination = 'dropOff1';
         $scope.dropOffs = [];
         $scope.waypoints = [];
+        $scope.orderedWaypoints = [];
         $scope.location = {};
         $scope.currentMarker = 'pickUp';
         $scope.$MarkerList = ['pickUp', 'dropOff1', 'dropOff2', 'dropOff3', 'dropOff4'];
@@ -40,8 +41,14 @@
             // Get the name of current location
             $Geocode.getNames({coords: $Event.latLng})
                 .then(function(res) {
+                    
+                    var $Data = res[0];
+                    
                     console.log(res);
                     if ($scope.map["O" + currentMarkerName]) $scope.map["O" + currentMarkerName].value = res[0].formatted_address;
+					if (currentMarkerName.indexOf('pickUp') != -1) $scope.updatePickup($Data, $Data.geometry.location);
+					if (currentMarkerName.indexOf('dropOff') != -1) $scope.setDropoff($Data.geometry.location, {}, $Data, currentMarkerName);
+                    
 
                 }, function(err) {
 
@@ -50,10 +57,17 @@
             });
             
         };
+        
+        $scope.updatePickup = function($CoreModel, $Position) {
+
+			console.log("Updating Pickup");
+			$scope.location['pickUp'] = $Position;
+			$scope.setLocation();
+
+		};
 
         $scope.handleMapClick = function($Coords, $Pixel, $Za) {
-        
-            console.log("Handle on map click");
+
             if ($scope.$MarkerList[0] != $scope.currentMarker) return new Error("Can't create a marker.");
 
             var currentMarkerName = $scope.currentMarker;
@@ -65,6 +79,9 @@
                 },
                 oninit: function($Event) {
                     $scope.setInputFieldForMarker($Event, currentMarkerName);
+                },
+                onclick: function($Event) {
+                    console.log("Clicking on the marker");  
                 },
                 $inputEle: $scope.map["O" + $scope.currentMarker],
                 position: $Coords
@@ -80,6 +97,7 @@
                 coords: $Event.latLng
             }).then(function(results) {
                 $AutoCompScope.element.value = results[0].formatted_address || '';
+                setTimeout(function() { $scope.setLocation(); }, 100);
             }, function(error) {
                 console.error(error);
             });
@@ -97,10 +115,12 @@
 
             $scope.location[name] = $Position;
 
+            $Position['title'] = name;
+            
             var index = $filter('getByName')($scope.dropOffs, name),
                 $WayPoint = {
                     name: name,
-                    location: $Position
+                    location: $Position,
             },
                 $PointInfo = ang.copy($WayPoint),
                 $InsertedEle = 0;
@@ -156,8 +176,6 @@
         
         $scope.setLocation = function($Position, $Model, $CoreModel) {
             
-            console.log($scope.location[$scope.currentDestination]);
-            
             var current = $scope.location['pickUp'],
                 destination = $scope.location[$scope.currentDestination];
 
@@ -190,6 +208,7 @@
             console.log('Handle on change');
             
             console.log(arguments);
+            $scope.orderedWaypoints = $Directions.routes[0].waypoint_order;
             
             $parentScope['pickUp'] = $scope['pickUp'] = $Leg.current.name;
             $parentScope[$scope.currentDestination] = $scope[$scope.currentDestination] = $Leg.destination.name;
@@ -214,39 +233,31 @@
                 if (isNameEqual) { 
                     
                     $scope.dropOffs[key]['location'] = $Leg.destination.coords;
-                    console.log($scope.dropOffs[key]['location']);
-                    console.log('Skipping');
-                    continue;
+                    break;
                     
                 }
-                
-                (function(index) {
-                 
-                    var waypointIndex = ($WayPoints[index-1]) ? index-1 : index;
-
-                    console.log("waypointIndex " + waypointIndex);
-                    console.log("dropOffIndex " + index);
-
-                    console.log("Before change : ");
-                    console.log($scope.dropOffs[index]['location']);
-                  
-                    // Set the end_location into the dropOff
-                    $scope.dropOffs[index]['location'] = ang.copy($WayPoints[waypointIndex]['end_location']);
-                    // Set the name
-                    $parentScope[$scope.dropOffs[index]['name']] = $WayPoints[waypointIndex]['end_address'];
-
-                    console.log("After change : " + $scope.dropOffs[index]['location'].toString());
-
-                }(key));
 
             }
 
             console.log(JSON.stringify($scope.dropOffs));
 
         };
+        
+        $scope.optimize = function() {
+            
+            var $OrderWaypoints = [];
+            
+            angular.forEach($scope.orderedWaypoints, function(value, key) {
+               $OrderWaypoints.push($scope['waypoints'][value]);             
+            });
+            
+            $scope['waypoints'] = $OrderWaypoints;
+            setTimeout(function() { $scope.setLocation(); }, 100);
 
+        }
+        
     }
-
+    
     function reShapeWaypoints($list) {
         
         var $List = $list || [],
