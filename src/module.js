@@ -429,7 +429,7 @@
             
         }
         
-        return undefined;
+        return -1;
         
     }
     
@@ -456,7 +456,7 @@
         var position = findInList(List || [], {key: 'name', value: model['name']}),
             index = position;
 
-        if (position != undefined) {
+        if (position >= 0) {
             List[position] = extendObj(List[position], model);
         } else { List.push(model); index = List.length - 1;}
         
@@ -608,6 +608,15 @@
     function addingMarker(options) {
         
         console.log(options);
+        var indexOfCurrentMarker = findInList(this.markers || [], {key: 'name', value: options['name'] || ''})
+        
+        if (indexOfCurrentMarker >= 0 && this.markers[indexOfCurrentMarker]['marker']) {
+            
+            var $Marker = this.markers[indexOfCurrentMarker]['marker'];
+            $Marker.setPosition(options['position'] || {lat: 0, lng: 0});
+            $Marker.setMap(this);
+            return;
+        }
         
         var options = options || {},
             isOnDragEndFunc = (typeof options['ondragend'] == 'function'),
