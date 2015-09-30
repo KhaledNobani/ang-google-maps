@@ -204,7 +204,9 @@
         };
         
         $scope.handleDirectionChange = function($Leg, $parentScope, $Directions) {
-
+ 
+            return;
+            
             console.log('Handle on change');
             
             console.log(arguments);

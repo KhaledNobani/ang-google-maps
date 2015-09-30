@@ -267,6 +267,19 @@
 
     }
     
+    function deletingMarker(name) {
+        var markerName = name || '',
+            indexOfMarker = (markerName) ? findByName(this.markers, markerName) : -1;
+        
+        if (indexOfMarker == -1) return;
+        
+        // Set marker into map null
+        this.markers[indexOfMarker]['marker'].setMap(null);
+        
+        console.log(this);
+        
+    }
+    
     function initMapModel() {
         
         window.map = this.$parent.map = this.map = new g.maps.Map(this.mapContainer, this.mapOptions);
@@ -279,6 +292,8 @@
         this.map.addingMarker = addingMarker;
         this.map.ondirectionchange = this.ondirectionchange || undefined;
         //this.map.location = 
+        // Attach deleting marker method into the map's object.
+        this.map.deletingMarker = deletingMarker;
         
         this.initMarkers = function() {
             
@@ -471,6 +486,7 @@
                 label: Characters[indexOfMarker]
             });
         } else {
+            $Self.map.markers[indexOfMarker]['marker'].setMap($Self.map);
             $Self.map.markers[indexOfMarker]['marker'].setPosition({
                 lat: lat,
                 lng: lng
