@@ -216,7 +216,8 @@
                 lat: parseFloat($scope.configs.lat),
                 lng: parseFloat($scope.configs.lng),
             },
-            zoom: $scope.configs.zoom || 18
+            zoom: $scope.configs.zoom || 18,
+            scrollwheel: $scope.configs.scrollwheel || false,
         };
 
         $scope.createMapContainer = createMapContainer;
