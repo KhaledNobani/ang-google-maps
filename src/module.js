@@ -194,7 +194,8 @@
                 map: '=map',
                 nameofinput: '@',
                 onfill: '&onfill',
-                ondrop: '&ondrop'
+                ondrop: '&ondrop',
+                onmarkerclick: '&onmarkerclick'
             }
 
         };
@@ -477,15 +478,13 @@
         }
         
         var $Marker = $Self.map.markers[indexOfMarker]['marker'];
-        
-        console.log($Marker);
 
         $Marker.addListener('dragend', function($Event) {
             if(typeof $Self.ondrop == 'function') $Self.ondrop({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self});
         });
         
         $Marker.addListener('click', function($Event) {
-            console.log("Marker has been clicked"); 
+            if (typeof $Self.onmarkerclick == 'function') $Self.onmarkerclick({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self});
         });
         
         // Push a new marker into markers list

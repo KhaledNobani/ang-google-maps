@@ -81,7 +81,7 @@
                     $scope.setInputFieldForMarker($Event, currentMarkerName);
                 },
                 onclick: function($Event) {
-                    console.log("Clicking on the marker");  
+                    console.log("Clicking on the marker");
                 },
                 $inputEle: $scope.map["O" + $scope.currentMarker],
                 position: $Coords
@@ -255,6 +255,12 @@
             setTimeout(function() { $scope.setLocation(); }, 100);
 
         }
+        
+        $scope.handleMarkerClick = function ($Event, $Model, $AutoCompScope) {
+        
+            console.log("The marker has been clicked from the controller");
+        
+        };
         
     }
     
