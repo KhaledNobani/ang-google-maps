@@ -9,6 +9,7 @@ Initialise Google Maps, Set Location, Drop Pins, Etc...
 5. Dropping the marker into the map on `click` event.
 6. Attaching the callback for marker's `click` event while dropping the marker into the map / textfield input filled (AutoComplete).
 7. Deleting the marker from the map with deletingMarker.
+8. Reset direction's route.
 
 ### Screenshots
 ![alt tag](https://raw.githubusercontent.com/khalednobani/ang-google-maps/master/assets/img/1.%20Demo.png)

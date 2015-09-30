@@ -550,7 +550,11 @@
 
         var $DirectionService = configs['$DirectionService'],
             $DirectionDisplay = configs['$DirectionDisplay'];
-
+        
+        window.resetRoute = function() {
+            $DirectionDisplay.setMap(null);
+        };
+        
         return {
 
             setRoute : function(options) {
@@ -586,6 +590,10 @@
 
                 }
 
+            },
+            
+            resetRoute: function(options) {
+                $DirectionDisplay.setMap(null);
             }
 
         };
