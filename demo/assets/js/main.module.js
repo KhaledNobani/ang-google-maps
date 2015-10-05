@@ -185,7 +185,9 @@
                     map: $scope.map,
                     current: current,
                     destination: destination,
-                    dropOffs: $scope['waypoints']
+                    dropOffs: $scope['waypoints'],
+                    avoidHighways: true,
+                    avoidTolls: true
                 });
             }
 
@@ -204,13 +206,16 @@
         };
         
         $scope.handleDirectionChange = function($Leg, $parentScope, $Directions) {
- 
+            
+            $scope.orderedWaypoints = $Directions.routes[0].waypoint_order;
+            console.log("$scope.orderedWaypoints");
+            console.log($scope.orderedWaypoints);
             return;
             
             console.log('Handle on change');
             
             console.log(arguments);
-            $scope.orderedWaypoints = $Directions.routes[0].waypoint_order;
+            
             
             $parentScope['pickUp'] = $scope['pickUp'] = $Leg.current.name;
             $parentScope[$scope.currentDestination] = $scope[$scope.currentDestination] = $Leg.destination.name;
@@ -252,9 +257,12 @@
             angular.forEach($scope.orderedWaypoints, function(value, key) {
                $OrderWaypoints.push($scope['waypoints'][value]);             
             });
-            
+
             $scope['waypoints'] = $OrderWaypoints;
-            setTimeout(function() { $scope.setLocation(); }, 100);
+            setTimeout(function() { $scope.setLocation({
+                avoidHighways: true,
+                avoidTolls: true
+            }); }, 100);
 
         }
         

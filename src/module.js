@@ -1,6 +1,7 @@
 (function(ang, g) {
     
-    var Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    var indexOfPacContainer = 0,
+        Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
         labelIndex = 0;
     
     'use strict';
@@ -218,6 +219,7 @@
             },
             zoom: $scope.configs.zoom || 18,
             scrollwheel: $scope.configs.scrollwheel || false,
+            
         };
 
         $scope.createMapContainer = createMapContainer;
@@ -397,7 +399,8 @@
             { type: 'geocode' }
         );
         
-        $scope.element = element[0];        
+        $scope.element = element[0];     
+        if($scope.element) $scope.element.setAttribute('pac-element-index', indexOfPacContainer);
         $rootScope[$scope['nameofinput']] = '';
         $rootScope.$watch($scope['nameofinput'], function(newValue, oldValue) {
             //console.log("Something is being changed");
@@ -414,7 +417,9 @@
         g.maps.event.addListener($scope.autocomplete, 'place_changed', function() {
             $scope.fillInAddress();
         });
-
+        
+        indexOfPacContainer += 1;
+        
     }
     
     autoCompleteTempLink.$inject = ['$scope', 'element', 'attrs', 'ctrls'];
@@ -573,8 +578,8 @@
                         provideRouteAlternatives : true,
                         optimizeWaypoints : options['optimized'] || true,
                         waypoints: options['dropOffs'] || [],
-                        avoidHighways: true,
-                        avoidTolls: true,
+                        avoidHighways: options['avoidHighways'] || false,
+                        avoidTolls: options['avoidTolls'] || false,
                         travelMode: g.maps.TravelMode.DRIVING,
                         unitSystem: g.maps.UnitSystem.IMPERIAL
 
