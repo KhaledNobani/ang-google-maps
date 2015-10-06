@@ -19,7 +19,7 @@
                     suppressMarkers: true
                     //infoWindow: new google.maps.InfoWindow
             });
-            
+
             console.log($DirectionDisplay);
             
             $DirectionDisplay.addListener('directions_changed', function(res) { 
@@ -196,7 +196,8 @@
                 nameofinput: '@',
                 onfill: '&onfill',
                 ondrop: '&ondrop',
-                onmarkerclick: '&onmarkerclick'
+                onmarkerclick: '&onmarkerclick',
+                markerlabel: '@'
             }
 
         };
@@ -489,7 +490,7 @@
                 map: $Self.map,
                 lat: lat,
                 lng: lng,
-                label: Characters[indexOfMarker]
+                label: $Self['markerlabel'] || Characters[indexOfMarker],
             });
         } else {
             $Self.map.markers[indexOfMarker]['marker'].setMap($Self.map);
@@ -646,7 +647,7 @@
         $Marker.setMap(this);
         
         var indexOfMarker = appendMarker(this.markers, model);
-        this.markers[indexOfMarker]['marker'].setLabel(Characters[indexOfMarker]);
+        this.markers[indexOfMarker]['marker'].setLabel(options['markerlabel'] || Characters[indexOfMarker]);
         
         if(isOnDragEndFunc) $Marker.addListener('dragend', function($Event) {
             options['ondragend']($Event);

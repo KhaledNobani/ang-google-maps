@@ -70,7 +70,9 @@
 
             if ($scope.$MarkerList[0] != $scope.currentMarker) return new Error("Can't create a marker.");
 
-            var currentMarkerName = $scope.currentMarker;
+            var currentMarkerName = $scope.currentMarker,
+                numPatt = /\d+/,
+                markerlabel = (currentMarkerName.indexOf('dropOff') >= 0) ? currentMarkerName.match(numPatt)[0] : 'P';
             
             $scope.map.addingMarker({
                 name: currentMarkerName || '',
@@ -84,7 +86,8 @@
                     console.log("Clicking on the marker");
                 },
                 $inputEle: $scope.map["O" + $scope.currentMarker],
-                position: $Coords
+                position: $Coords,
+                markerlabel: markerlabel
             });
             
             $scope.$MarkerList.splice(0, 1);
