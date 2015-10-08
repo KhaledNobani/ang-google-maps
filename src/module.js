@@ -623,6 +623,7 @@
             var $Marker = this.markers[indexOfCurrentMarker]['marker'];
             $Marker.setPosition(options['position'] || {lat: 0, lng: 0});
             $Marker.setMap(this);
+            if (isOnInitFunc) options['oninit']({latLng: options['position']}, $Marker);
             return;
         }
         
