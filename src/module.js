@@ -196,6 +196,7 @@
                 nameofinput: '@',
                 onfill: '&onfill',
                 ondrop: '&ondrop',
+                ondragstart: '&ondragstart',
                 onmarkerclick: '&onmarkerclick',
                 markerlabel: '@'
             }
@@ -507,6 +508,10 @@
             if(typeof $Self.ondrop == 'function') $Self.ondrop({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self});
         });
         
+        $Marker.addListener('dragstart', function($Event) {
+            if(typeof $Self.ondragstart == 'function') $Self.ondragstart({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self});
+        });
+                
         $Marker.addListener('click', function($Event) {
             if (typeof $Self.onmarkerclick == 'function') $Self.onmarkerclick({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self});
         });
@@ -616,7 +621,12 @@
     function addingMarker(options) {
         
         console.log(options);
-        var indexOfCurrentMarker = findInList(this.markers || [], {key: 'name', value: options['name'] || ''})
+        var indexOfCurrentMarker = findInList(this.markers || [], {key: 'name', value: options['name'] || ''}),
+            options = options || {},
+            isOnDragStart = (typeof options['ondragstart'] == 'function'),
+            isOnDragEndFunc = (typeof options['ondragend'] == 'function'),
+            isOnInitFunc = (typeof options['oninit'] == 'function'),
+            isOnClickFunc = (typeof options['onclick'] == 'function');
         
         if (indexOfCurrentMarker >= 0 && this.markers[indexOfCurrentMarker]['marker']) {
             
@@ -630,11 +640,9 @@
             return;
         }
         
-        var options = options || {},
-            isOnDragEndFunc = (typeof options['ondragend'] == 'function'),
-            isOnInitFunc = (typeof options['oninit'] == 'function'),
-            isOnClickFunc = (typeof options['onclick'] == 'function'),
-            $Marker = new g.maps.Marker({
+
+            
+        var $Marker = new g.maps.Marker({
                 path: 0,
                 position: options['position'],
                 draggable: true,
@@ -654,13 +662,17 @@
         var indexOfMarker = appendMarker(this.markers, model);
         this.markers[indexOfMarker]['marker'].setLabel(options['markerlabel'] || Characters[indexOfMarker]);
         
-        if(isOnDragEndFunc) $Marker.addListener('dragend', function($Event) {
+        if (isOnDragEndFunc) $Marker.addListener('dragend', function($Event) {
             options['ondragend']($Event);
         });
         
-        if(isOnClickFunc) $Marker.addListener('click', function($Event) {
+        if (isOnClickFunc) $Marker.addListener('click', function($Event) {
              //console.log('Clicking on the marker');
             options['onclick']($Event);
+        });
+        
+        if (isOnDragStart) $Marker.addListener('dragstart', function($Event) {
+           options['ondragstart']($Event); 
         });
         
     }
