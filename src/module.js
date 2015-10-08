@@ -620,10 +620,13 @@
         
         if (indexOfCurrentMarker >= 0 && this.markers[indexOfCurrentMarker]['marker']) {
             
-            var $Marker = this.markers[indexOfCurrentMarker]['marker'];
+            var $Marker = this.markers[indexOfCurrentMarker]['marker'],
+                isOnInitFunc = typeof options['oninit'] == 'function';
+            
             $Marker.setPosition(options['position'] || {lat: 0, lng: 0});
             $Marker.setMap(this);
             if (isOnInitFunc) options['oninit']({latLng: options['position']}, $Marker);
+
             return;
         }
         
