@@ -279,9 +279,7 @@
         
         // Set marker into map null
         this.markers[indexOfMarker]['marker'].setMap(null);
-        
-        console.log(this);
-        
+        if(this.map['O'+name]) delete this.map['O'+name];        
     }
     
     function initMapModel() {
