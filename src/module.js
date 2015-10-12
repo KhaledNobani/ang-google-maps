@@ -476,8 +476,8 @@
     function fillInAddress() {
 
         var place = this.autocomplete.getPlace(),
-            lat = place.geometry.location.G || place.geometry.location.H,
-            lng = place.geometry.location.K || place.geometry.location.L,
+            lat = place.geometry.location.lat() || 0,
+            lng = place.geometry.location.lng() || 0,
             $CtrlScope = this.$parent,
             $Self = this,
             $Position = { lat: parseFloat(lat), lng: parseFloat(lng) },
