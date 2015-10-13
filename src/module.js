@@ -55,8 +55,6 @@
             $Legs = $Routes.legs,
             $Result = {waypoints: [], totalDuration: 0, totalDistance: 0};
         
-        console.log($Legs);
-
         if (!$Legs.length) return $Results;
         
         $Result['current'] = {
@@ -74,9 +72,6 @@
                 prev_coords: $Legs[0]['start_location'],
                 prev_name: $Legs[0]['start_address']
             }
-            
-            $Result['totalDistance'] += $Legs[0]['distance']['value'];
-            $Result['totalDuration'] += $Legs[0]['duration']['value'];
 
         } else {
          
@@ -93,14 +88,20 @@
                     $Result['waypoints'].push($Legs[index]);
                 }
 
-                $Result['totalDistance'] += $Legs[index]['distance']['value'];
-                $Result['totalDuration'] += $Legs[index]['duration']['value'];
-
             }
 
             $Result['waypoints'] = $Result['waypoints'].reverse();
             
         }
+        
+        for (var index = 0, length = $Legs.length; index < length; index++) {
+
+            $Result['totalDistance'] += $Legs[index]['distance']['value'];
+            $Result['totalDuration'] += $Legs[index]['duration']['value'];
+
+        }
+        
+        console.log($Result);
         
         return $Result;
         
@@ -367,6 +368,14 @@
                 $Za: $Event.za,
                 $Event: $Event
             })
+            
+        });
+        
+        $Self.map.addListener('dblclick', function($Event) {
+            
+            // $Event.stopPropagation();
+            console.log($Event);
+            console.log("Double click");
             
         });
         
