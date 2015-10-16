@@ -106,7 +106,7 @@
         return $Result;
         
     }
-    
+
     /**
       * Factory of google map's marker
       */
@@ -287,6 +287,182 @@
         }
     }
     
+    /**
+      * Extends maps's object.
+      *
+      * @param Object $Maps.
+      */
+    function ExtendsMaps($Maps) {
+        
+        var $Maps = $Maps || {},
+            $RefMaps = { $Maps: $Maps };
+        
+        $RefMaps.searchMarkers = function(name) {
+            
+            var $Data = { code: -1 };
+            
+            for (var index = 0, length = this.$Maps.markers.length; index < length; index++) {
+             
+                if (this.$Maps.markers[index]['name'] == name) {
+                    $Data = { code: index, $E: this.$Maps.markers[index] };
+                    break;
+                }
+                
+            }
+            
+            return $Data;
+            
+        };
+        
+        /**
+          * Assign _$Marker service into map's object.
+          */
+        $Maps._$Marker = {
+            get: function(name) {
+                return $RefMaps.searchMarkers(name);
+            }
+        };
+        
+        $Maps._$Polyline = {
+            
+            /**
+              * Draws the polyline into the map.
+              */
+            draw: function() {
+                
+            },
+            
+            /**
+              * Processes steps object.
+              *
+              * @param Array $Steps [{}, {}]
+              *
+              * @return Array $Paths [{lat: , lng: }, {lat: , lng: }]
+              */
+            processingSteps: function($Steps) {
+                
+                var $Steps = $Steps || undefined,
+                    $Paths = [];
+                
+                if (!$Steps.length) throw new Error("$Steps can't be empty / undefined");
+                
+                for (var index = 0, length = $Steps.length; index < length; index++) {
+                 
+                    var $Path = (typeof $Steps[index] == 'object') ? $Steps[index]['path'] : undefined;
+                    if (!$Path) throw new Error("$Path must be object");
+                    
+                    for (var index2 = 0, length2 = $Path.length; index2 < length2; index2++) {
+                     
+                        $Paths.push({
+                            lat: (typeof $Path[index2]['lat'] == 'function') ? $Path[index2]['lat']() : $Path[index2]['lat'] || 0,
+                            lng: (typeof $Path[index2]['lng'] == 'function') ? $Path[index2]['lng']() : $Path[index2]['lng'] || 0,
+                        });
+                        
+                    }
+                    
+                }
+                
+                return $Paths;
+                
+            },
+            
+            /**
+              * Gets the paths from the $Directions.
+              *
+              * @param Object $Directions
+              * @param String latlng {32.49129291,8.23124124}
+              *
+              * @return Array $Paths.
+              */
+            getPaths: function($Directions, latlng) {
+                
+                var $Routes = $Directions.routes;
+                
+                if (!$Routes.length) throw new Error("Routes can't be empty / undefined @ getPaths method");
+                
+                var $Legs = ($Routes[0]) ? $Routes[0].legs : undefined;
+                
+                if (!$Legs.length) throw new Error("Legs can't be empty / undefined @ getPaths method");
+                
+                for (var index = 0 , length = $Legs.length; index < length; index++) {
+                    
+                    var $StartLocation = $Legs[index]['start_location'] || {};
+                    
+                    if ('start_location' in $Legs[index]) {
+                     
+                        var lat = (typeof $StartLocation.lat == 'function') ? $StartLocation.lat() : $StartLocation.lat || 0,
+                            lng = (typeof $StartLocation.lng == 'function') ? $StartLocation.lng() : $StartLocation.lng || 0;
+                        
+                        if (latlng == (lat + ',' + lng)) {
+                            console.log("Matched");
+                            console.log("Do Something");
+                            return this.processingSteps($Legs[index]['steps']);
+                        }
+                        
+                    }
+                    
+                }
+                
+            },
+            
+            /**
+              * Gets the polyline's object.
+              */
+            getPolyline: function(name) {
+                
+                var $Data = { code: -1 };
+                
+                if ($Maps.O$polyline) {
+                    if ($Maps.O$polyline[name]) $Data = { code: 1, $E: $Maps.O$polyline[name] };
+                }
+                    
+                return $Data;
+                
+            },
+            
+            /**
+              * Clears the polyline from the map.
+              *
+              * @param Object $Polyline.
+              */
+            clearPolyline: function($Polyline) {
+                
+                var $Polyline = $Polyline || {};
+                
+                if ('setMap' in $Polyline && typeof $Polyline.setMap == 'function') $Polyline.setMap(null);
+
+            },
+            
+            /**
+              * Draws the polyline into the map.
+              *
+              */
+            addPolyline: function($Configs) {
+                
+                if ($Maps['O$polyline'][$Configs['name']]) {
+                    $Maps['O$polyline'][$Configs['name']].setMap(null);
+                    delete $Maps['O$polyline'][$Configs['name']];
+                }
+                
+                var $Configs = $Configs || [],
+                    $PathPolyline = new google.maps.Polyline({
+                        path: $Configs['paths'] || [],
+                        geodesic: $Configs['geodesic'] || true,
+                        strokeColor: $Configs['strokeColor'] || '#19CA93',
+                        strokeOpacity: $Configs['strokeOpacity'] || 1,
+                        strokeWeight: $Configs['strokeWeight'] || 4,
+                        map: $Maps
+                    });
+                
+                if ($Configs['name']) $Maps['O$polyline'][$Configs['name']] = $PathPolyline;
+ 
+                return $PathPolyline; 
+            }
+
+        };
+        
+    }
+    
     function initMapModel() {
         
         window.map = this.$parent.map = this.map = new g.maps.Map(this.mapContainer, this.mapOptions);
@@ -296,6 +472,7 @@
         this.map.markers = [];
         this.map.id = this.configs.id;
         this.map.location = {};
+        this.map.O$polyline = {};
         this.map.addingMarker = addingMarker;
         this.map.ondirectionchange = this.ondirectionchange || undefined;
         //this.map.location = 
@@ -315,6 +492,7 @@
         this.initMarkers();
 
         attachMapEvents.call(this);
+        ExtendsMaps(this.map);
         
     }
     

@@ -5,9 +5,7 @@
     ang.module('main', ['ang-google-maps', 'ang-google-services'])
         .controller('mainCtrl', ['$scope', 'Direction', '$Geocode', '$rootScope', '$filter', mainCtrl])
         .filter('getByName', function() {
-
             return function(input, name) {
-
                 for (var index = 0, length = ('length' in input) ? input.length : 0; index < length; index++) {
 
                     if (input[index]['name'] == name) {
@@ -15,15 +13,11 @@
                     }
 
                 }
-
                 return -1;
-
             }
-
         });
     
     function mainCtrl($scope, Direction, $Geocode, $rootScope, $filter) {
-
         var $Self = this;
         
         // Models
@@ -37,7 +31,6 @@
         $scope.$MarkerList = ['pickUp', 'dropOff1', 'dropOff2', 'dropOff3', 'dropOff4'];
         
         $scope.setInputFieldForMarker = function($Event, currentMarkerName) {
-            
             // Get the name of current location
             $Geocode.getNames({coords: $Event.latLng})
                 .then(function(res) {
@@ -51,23 +44,17 @@
                     
 
                 }, function(err) {
-
                     console.error(err);
-
             });
-            
         };
         
         $scope.updatePickup = function($CoreModel, $Position) {
-
 			console.log("Updating Pickup");
 			$scope.location['pickUp'] = $Position;
 			$scope.setLocation();
-
 		};
 
         $scope.handleMapClick = function($Coords, $Pixel, $Za) {
-
             if ($scope.$MarkerList[0] != $scope.currentMarker) return new Error("Can't create a marker.");
 
             var currentMarkerName = $scope.currentMarker,
@@ -91,11 +78,9 @@
             });
             
             $scope.$MarkerList.splice(0, 1);
-            
         };
-            
-        $scope.handleMarkerDrop = function($Event, $Model, $AutoCompScope) {
 
+        $scope.handleMarkerDrop = function($Event, $Model, $AutoCompScope) {
             $Geocode.getNames({
                 coords: $Event.latLng
             }).then(function(results) {
@@ -104,18 +89,14 @@
             }, function(error) {
                 console.error(error);
             });
-
         };
 
         $scope.setPickup = function($Position, $Model, $CoreModel) {
-            
             $scope.location['pickUp'] = $Position;
             $scope.setLocation();
-            
         };
         
         $scope.setDropoff = function($Position, $Model, $CoreModel, name) {
-
             $scope.location[name] = $Position;
 
             $Position['title'] = name;
@@ -136,11 +117,9 @@
 
             $scope.waypoints = $scope.getWaypoints();            
             $scope.setLocation();
-            
         };
 
         $scope.getWaypoints = function() {
-            
             var $List = [];
             
             console.log($scope.dropOffs);
@@ -158,11 +137,9 @@
             });
                 
             return $List;
-            
         };
                 
         $scope.setCurrentDestination = function(name) {
-        
             if (!name) return;
             
             // Update the modele
@@ -174,11 +151,9 @@
             
             // Start setting the location.
             $scope.setLocation();
-            
         };
         
         $scope.setLocation = function($Position, $Model, $CoreModel) {
-            
             var current = $scope.location['pickUp'],
                 destination = $scope.location[$scope.currentDestination];
 
@@ -209,27 +184,14 @@
         };
         
         $scope.handleDirectionChange = function($Leg, $parentScope, $Directions) {
-            
-            $scope.orderedWaypoints = $Directions.routes[0].waypoint_order;
-            console.log("$scope.orderedWaypoints");
-            console.log($scope.orderedWaypoints);
             return;
-            
-            console.log('Handle on change');
-            
-            console.log(arguments);
-            
             
             $parentScope['pickUp'] = $scope['pickUp'] = $Leg.current.name;
             $parentScope[$scope.currentDestination] = $scope[$scope.currentDestination] = $Leg.destination.name;
             $scope.location['pickUp'] = $Leg.current.coords;
             $scope.location[$scope.currentDestination] = $Leg.destination.coords;
-            
-            console.log("Before Updating dropoffs");
-            console.log(JSON.stringify($scope.dropOffs));
-            
-            $scope.updateWaypoints($parentScope, $Leg, $Leg.waypoints);
 
+            $scope.updateWaypoints($parentScope, $Leg, $Leg.waypoints);
         };
         
         $scope.updateWaypoints = function($parentScope, $Leg, $WayPoints) {

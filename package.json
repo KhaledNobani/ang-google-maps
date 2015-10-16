@@ -1,6 +1,6 @@
 {
   "name": "ang-google-maps",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Module to initialize Google Maps API",
   "main": "index.js",
   "scripts": {
