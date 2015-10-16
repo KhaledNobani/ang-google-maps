@@ -391,9 +391,10 @@
                     if ('start_location' in $Legs[index]) {
                      
                         var lat = (typeof $StartLocation.lat == 'function') ? $StartLocation.lat() : $StartLocation.lat || 0,
-                            lng = (typeof $StartLocation.lng == 'function') ? $StartLocation.lng() : $StartLocation.lng || 0;
+                            lng = (typeof $StartLocation.lng == 'function') ? $StartLocation.lng() : $StartLocation.lng || 0,
+                            LatLng = lat + ',' + lng;
                         
-                        if (latlng == (lat + ',' + lng)) {
+                        if (latlng == LatLng) {
                             console.log("Matched");
                             console.log("Do Something");
                             return this.processingSteps($Legs[index]['steps']);
