@@ -304,7 +304,7 @@
             for (var index = 0, length = this.$Maps.markers.length; index < length; index++) {
              
                 if (this.$Maps.markers[index]['name'] == name) {
-                    $Data = { code: index, $E: this.$Maps.markers[index] };
+                    $Data = { code: index, $E: this.$Maps.markers[index], index: index };
                     break;
                 }
                 
@@ -319,7 +319,44 @@
           */
         $Maps._$Marker = {
             get: function(name) {
-                return $RefMaps.searchMarkers(name);
+                var $Query = $RefMaps.searchMarkers(name);
+                
+                if ($Query.code < 0) return -1;
+                
+                return $Query.$E;
+            },
+            delete: function(name) {
+                try {
+                    var $Query = $RefMaps.searchMarkers(name);
+                    
+                    if ($Query.code < 0) return false;
+                    
+                    if(typeof $Query.$E.marker == 'object') if(typeof $Query.$E.marker.setMap == 'function') $Query.$E.marker.setMap(null);
+                    
+                    setTimeout(function() {
+                        if($RefMaps.$Maps.markers[$Query.index]['marker']) delete $RefMaps.$Maps.markers[$Query.index]['marker'];
+                        $RefMaps.$Maps.markers.splice($Query.index, 1);
+                    }, 1);
+                
+                    return true;
+                } catch (error) {
+                    return false;
+                }
+                
+            },
+            updateAll: function(callback) {
+                
+                var callback = callback || function() {};
+                
+                for (var index = 0, length = $RefMaps.$Maps.markers.length; index < length; index++) {
+                 (function(i, $O) {
+                     
+                     callback($O);
+                     
+                 }(index, $RefMaps.$Maps.markers[index]))
+                    
+                }
+                
             }
         };
         
@@ -430,7 +467,7 @@
                 
                 var $Polyline = $Polyline || {};
                 
-                if ('setMap' in $Polyline && typeof $Polyline.setMap == 'function') $Polyline.setMap(null);
+                if ('setMap' in $Polyline && typeof $Polyline.setMap == 'function' ) $Polyline.setMap(null);
 
             },
             
@@ -480,6 +517,7 @@
         // Attach deleting marker method into the map's object.
         this.map.deletingMarker = deletingMarker;
         
+        /*
         this.initMarkers = function() {
             
             for (var index = 0, length = this.configs.markers.length; index < length; index++) {
@@ -489,8 +527,9 @@
             return this.map.markers;
             
         };
+        */
 
-        this.initMarkers();
+        //this.initMarkers();
 
         attachMapEvents.call(this);
         ExtendsMaps(this.map);
@@ -670,6 +709,8 @@
             $Self = this,
             $Position = { lat: parseFloat(lat), lng: parseFloat(lng) },
             indexOfMarker = findByName($Self.map.markers, $Self['model']['name']);
+        
+        if (indexOfMarker < 0) indexOfMarker = appendMarker($Self.map.markers, $Self['model']);
 
         $Self.map.panTo($Position);
 
