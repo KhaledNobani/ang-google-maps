@@ -712,44 +712,48 @@
         
         if (indexOfMarker < 0) indexOfMarker = appendMarker($Self.map.markers, $Self['model']);
 
-        $Self.map.panTo($Position);
+        try {
+            $Self.map.panTo($Position);
+            
+            // Drop pin
+            if(!$Self.map.markers[indexOfMarker]['marker']) {
+                $Self.map.markers[indexOfMarker]['marker'] = GetMarker({
+                    animation: google.maps.Animation.DROP,
+                    map: $Self.map,
+                    lat: lat,
+                    lng: lng,
+                    label: $Self['markerlabel'] || Characters[indexOfMarker],
+                });
+            } else {
+                $Self.map.markers[indexOfMarker]['marker'].setMap($Self.map);
+                $Self.map.markers[indexOfMarker]['marker'].setPosition({
+                    lat: lat,
+                    lng: lng
+                });   
+            }
 
-        // Drop pin
-        if(!$Self.map.markers[indexOfMarker]['marker']) {
-            $Self.map.markers[indexOfMarker]['marker'] = GetMarker({
-                animation: google.maps.Animation.DROP,
-                map: $Self.map,
-                lat: lat,
-                lng: lng,
-                label: $Self['markerlabel'] || Characters[indexOfMarker],
+            var $Marker = $Self.map.markers[indexOfMarker]['marker'];
+
+            $Marker.addListener('dragend', function($Event) {
+                if(typeof $Self.ondrop == 'function') $Self.ondrop({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self, $Marker: this});
             });
-        } else {
-            $Self.map.markers[indexOfMarker]['marker'].setMap($Self.map);
-            $Self.map.markers[indexOfMarker]['marker'].setPosition({
-                lat: lat,
-                lng: lng
-            });   
-        }
-        
-        var $Marker = $Self.map.markers[indexOfMarker]['marker'];
 
-        $Marker.addListener('dragend', function($Event) {
-            if(typeof $Self.ondrop == 'function') $Self.ondrop({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self, $Marker: this});
-        });
-        
-        $Marker.addListener('dragstart', function($Event) {
-            if(typeof $Self.ondragstart == 'function') $Self.ondragstart({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self, $Marker: this});
-        });
-                
-        $Marker.addListener('click', function($Event) {
-            if (typeof $Self.onmarkerclick == 'function') $Self.onmarkerclick({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self, $Marker: this});
-        });
-        
-        // Push a new marker into markers list
-        appendMarker($Self.map.markers, $Self.model);
+            $Marker.addListener('dragstart', function($Event) {
+                if(typeof $Self.ondragstart == 'function') $Self.ondragstart({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self, $Marker: this});
+            });
+
+            $Marker.addListener('click', function($Event) {
+                if (typeof $Self.onmarkerclick == 'function') $Self.onmarkerclick({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self, $Marker: this});
+            });
+
+            // Push a new marker into markers list
+            appendMarker($Self.map.markers, $Self.model);
+            
+        } catch (error) {
+            console.log(error.message);
+        }
 
         if(typeof $Self.onfill == 'function') $Self.onfill({$Position: $Position, $Model: $Self.model, $CoreModel: place, $Element: $Self.element, $Marker: $Marker});
-        
 
     }
 
