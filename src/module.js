@@ -734,21 +734,21 @@
         var $Marker = $Self.map.markers[indexOfMarker]['marker'];
 
         $Marker.addListener('dragend', function($Event) {
-            if(typeof $Self.ondrop == 'function') $Self.ondrop({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self});
+            if(typeof $Self.ondrop == 'function') $Self.ondrop({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self, $Marker: this});
         });
         
         $Marker.addListener('dragstart', function($Event) {
-            if(typeof $Self.ondragstart == 'function') $Self.ondragstart({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self});
+            if(typeof $Self.ondragstart == 'function') $Self.ondragstart({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self, $Marker: this});
         });
                 
         $Marker.addListener('click', function($Event) {
-            if (typeof $Self.onmarkerclick == 'function') $Self.onmarkerclick({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self});
+            if (typeof $Self.onmarkerclick == 'function') $Self.onmarkerclick({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self, $Marker: this});
         });
         
         // Push a new marker into markers list
         appendMarker($Self.map.markers, $Self.model);
 
-        if(typeof $Self.onfill == 'function') $Self.onfill({$Position: $Position, $Model: $Self.model, $CoreModel: place, $Element: $Self.element});
+        if(typeof $Self.onfill == 'function') $Self.onfill({$Position: $Position, $Model: $Self.model, $CoreModel: place, $Element: $Self.element, $Marker: $Marker});
         
 
     }
