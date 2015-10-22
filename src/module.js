@@ -864,8 +864,6 @@
             return;
         }
         
-
-            
         var $Marker = new g.maps.Marker({
                 path: 0,
                 position: options['position'],
@@ -887,16 +885,16 @@
         this.markers[indexOfMarker]['marker'].setLabel(options['markerlabel'] || Characters[indexOfMarker]);
         
         if (isOnDragEndFunc) $Marker.addListener('dragend', function($Event) {
-            options['ondragend'].call($Marker, $Event);
+            options['ondragend']($Event, $Marker);
         });
         
         if (isOnClickFunc) $Marker.addListener('click', function($Event) {
              //console.log('Clicking on the marker');
-            options['onclick'].call($Marker, $Event);
+            options['onclick']($Event, $Marker);
         });
         
         if (isOnDragStart) $Marker.addListener('dragstart', function($Event) {
-           options['ondragstart'].call($Marker, $Event); 
+           options['ondragstart']($Event, $Marker); 
         });
         
     }
