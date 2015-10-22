@@ -10,8 +10,7 @@
         .factory('GetPosition', function() { return GetPosition; })
         .factory('GetMarker', function() { return GetMarker; })
         .factory('Geocode', function() { return Geocode(); })
-        .factory('Direction', ['$q', '$rootScope', function($q, $rootScope) { 
-
+        .factory('Direction', ['$q', '$rootScope', function($q, $rootScope) {
             var $DirectionService = new g.maps.DirectionsService,
                 $DirectionDisplay = new g.maps.DirectionsRenderer({
                     draggable: true,
@@ -19,21 +18,14 @@
                     suppressMarkers: true
                     //infoWindow: new google.maps.InfoWindow
             });
-
-            console.log($DirectionDisplay);
-            
+ 
             $DirectionDisplay.addListener('directions_changed', function(res) { 
-                
-                console.log(this);
                 
                 var $Directions = this.directions,
                     $Map = this.map,
                     $Leg = $Directions.routes[0].legs[0],
                     $ProcessedLeg = processLegs($Directions);
-                
-                console.log("$Directions");
-                console.log($Directions);
-                
+
                 if (typeof $Map.ondirectionchange == 'function') $Map.ondirectionchange({$Leg: $ProcessedLeg, $parentScope: $rootScope, $Directions: $Directions});
 
                 $rootScope.$digest();
@@ -44,7 +36,6 @@
                 $DirectionService: $DirectionService,
                 $DirectionDisplay: $DirectionDisplay
             });
-
         }])
         .directive('mapTemp', ['$window', '$document', '$http', mapTempFactory])
         .directive('autoCompleteTemp', ['$window', '$http', '$rootScope', autoCompleteTempFactory]);
@@ -735,15 +726,15 @@
             var $Marker = $Self.map.markers[indexOfMarker]['marker'];
 
             $Marker.addListener('dragend', function($Event) {
-                if(typeof $Self.ondrop == 'function') $Self.ondrop({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self, $Marker: this});
+                if(typeof $Self.ondrop == 'function') $Self.ondrop({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self, $Marker: $Marker});
             });
 
             $Marker.addListener('dragstart', function($Event) {
-                if(typeof $Self.ondragstart == 'function') $Self.ondragstart({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self, $Marker: this});
+                if(typeof $Self.ondragstart == 'function') $Self.ondragstart({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self, $Marker: $Marker});
             });
 
             $Marker.addListener('click', function($Event) {
-                if (typeof $Self.onmarkerclick == 'function') $Self.onmarkerclick({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self, $Marker: this});
+                if (typeof $Self.onmarkerclick == 'function') $Self.onmarkerclick({$Event: $Event, $Model: $Self.model, $AutoCompScope: $Self, $Marker: $Marker});
             });
 
             // Push a new marker into markers list
@@ -896,16 +887,16 @@
         this.markers[indexOfMarker]['marker'].setLabel(options['markerlabel'] || Characters[indexOfMarker]);
         
         if (isOnDragEndFunc) $Marker.addListener('dragend', function($Event) {
-            options['ondragend']($Event);
+            options['ondragend'].call($Marker, $Event);
         });
         
         if (isOnClickFunc) $Marker.addListener('click', function($Event) {
              //console.log('Clicking on the marker');
-            options['onclick']($Event);
+            options['onclick'].call($Marker, $Event);
         });
         
         if (isOnDragStart) $Marker.addListener('dragstart', function($Event) {
-           options['ondragstart']($Event); 
+           options['ondragstart'].call($Marker, $Event); 
         });
         
     }
