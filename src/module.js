@@ -24,7 +24,7 @@
                 var $Directions = this.directions,
                     $Map = this.map,
                     $Leg = $Directions.routes[0].legs[0],
-                    $ProcessedLeg = processLegs($Directions);
+                    $ProcessedLeg = processLegs($Directions, $Map);
 
                 if (typeof $Map.ondirectionchange == 'function') $Map.ondirectionchange({$Leg: $ProcessedLeg, $parentScope: $rootScope, $Directions: $Directions});
 
@@ -40,7 +40,7 @@
         .directive('mapTemp', ['$window', '$document', '$http', mapTempFactory])
         .directive('autoCompleteTemp', ['$window', '$http', '$rootScope', autoCompleteTempFactory]);
     
-    function processLegs($Directions) {
+    function processLegs($Directions, $Map) {
         
         var $Routes = $Directions.routes[0],
             $Legs = $Routes.legs,
@@ -56,16 +56,13 @@
         };
         
         if ($Legs.length == 1) {
-
             $Result['destination'] = {
                 coords: $Legs[0]['end_location'],
                 name: $Legs[0]['end_address'],
                 prev_coords: $Legs[0]['start_location'],
                 prev_name: $Legs[0]['start_address']
             }
-
         } else {
-         
             for (var index = 0, length = $Legs.length; index < length; index++) {
 
                 if (index + 1 == length) { 
@@ -82,18 +79,15 @@
             }
 
             $Result['waypoints'] = $Result['waypoints'].reverse();
-            
         }
         
         for (var index = 0, length = $Legs.length; index < length; index++) {
+            if ($Map.isCurrentSameDestination && index + 1 == length) break;
 
             $Result['totalDistance'] += $Legs[index]['distance']['value'];
             $Result['totalDuration'] += $Legs[index]['duration']['value'];
-
         }
-        
-        console.log($Result);
-        
+
         return $Result;
         
     }
@@ -423,8 +417,8 @@
                             LatLng = lat + ',' + lng;
                         
                         if (latlng == LatLng) {
-                            console.log("Matched");
-                            console.log("Do Something");
+                            //console.log("Matched");
+                            //console.log("Do Something");
                             return this.processingSteps($Legs[index]['steps']);
                         }
                         
@@ -493,7 +487,6 @@
     }
     
     function initMapModel() {
-        
         window.map = this.$parent.map = this.map = new g.maps.Map(this.mapContainer, this.mapOptions);
                
         this.mapOptions['disableDefaultUI'] = true;
@@ -507,24 +500,32 @@
         //this.map.location = 
         // Attach deleting marker method into the map's object.
         this.map.deletingMarker = deletingMarker;
-        
-        /*
-        this.initMarkers = function() {
-            
-            for (var index = 0, length = this.configs.markers.length; index < length; index++) {
-                this.map.markers.push(this.configs.markers[index]);
-            }
-            
-            return this.map.markers;
-            
-        };
-        */
-
-        //this.initMarkers();
 
         attachMapEvents.call(this);
         ExtendsMaps(this.map);
+    }
+    
+    // For incoming features
+    function attachMapEvents() {
         
+        var $Self = this;
+        
+        $Self.map.addListener('click', function($Event) {
+            $Self.onmapclick({
+                $Coords: $Event.latLng,
+                $Pixel: $Event.pixel,
+                $Za: $Event.za,
+                $Event: $Event
+            });
+        });
+        
+        /*
+        $Self.map.addListener('dblclick', function($Event) {
+            // $Event.stopPropagation();
+            console.log($Event);
+            console.log("Double click");
+        });
+        */
     }
     
     function renderWithGeolocation($Position) {
@@ -561,33 +562,6 @@
 
         initMapModel.call($Obj);
 
-    }
-
-    // For incoming features
-    function attachMapEvents() {
-        
-        var $Self = this;
-        
-        $Self.map.addListener('click', function($Event) {
-            
-            console.log("Clicking on the map");
-            $Self.onmapclick({
-                $Coords: $Event.latLng,
-                $Pixel: $Event.pixel,
-                $Za: $Event.za,
-                $Event: $Event
-            })
-            
-        });
-        
-        $Self.map.addListener('dblclick', function($Event) {
-            
-            // $Event.stopPropagation();
-            console.log($Event);
-            console.log("Double click");
-            
-        });
-        
     }
 
     /**
@@ -817,9 +791,7 @@
                     }, function(response, status) {
 
                         if (status == g.maps.DirectionsStatus.OK) {
-                            // Display the route on the map.
-                            console.log("Line 413");
-                            console.log(response);
+                            // console.log(response);
                             $DirectionDisplay.setDirections(response);
                         }
 
@@ -843,8 +815,7 @@
       * @param {Options}
       */
     function addingMarker(options) {
-        
-        console.log(options);
+
         var indexOfCurrentMarker = findInList(this.markers || [], {key: 'name', value: options['name'] || ''}),
             options = options || {},
             isOnDragStart = (typeof options['ondragstart'] == 'function'),
