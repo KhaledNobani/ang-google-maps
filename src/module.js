@@ -782,8 +782,8 @@
 
                         destination: (options['destination']) ? options['destination'] : { location: {lat: 0, lng: 0 }},
                         origin: (options['current']) ? options['current'] : { location: {lat: 0, lng: 0 }},
-                        provideRouteAlternatives : (options['provideRouteAlternatives']) ? (options['provideRouteAlternatives']) : true,
-                        optimizeWaypoints : (options['optimized']) ? options['optimized'] : true,
+                        provideRouteAlternatives : (options['provideRouteAlternatives']) ? (options['provideRouteAlternatives']) : false,
+                        optimizeWaypoints : (options['optimized']) ? options['optimized'] : false,
                         waypoints: (options['dropOffs']) ? options['dropOffs'] : [],
                         avoidHighways: (options['avoidHighways']) ? options['avoidHighways'] : false,
                         avoidTolls: (options['avoidTolls']) ? (options['avoidTolls']) : false,
