@@ -768,8 +768,10 @@
         
         return {
 
-            setRoute : function(options) {
-
+            setRoute: function(options) {
+                
+                if (!g) return;
+                
                 if (options['map']) {
 
                     //clearAllMarkers(options['map']);
@@ -778,13 +780,13 @@
 
                     $DirectionService.route({
 
-                        destination: options['destination'] || '',
-                        origin: options['current'] || 0,
-                        provideRouteAlternatives : true,
-                        optimizeWaypoints : options['optimized'] || true,
-                        waypoints: options['dropOffs'] || [],
-                        avoidHighways: options['avoidHighways'] || false,
-                        avoidTolls: options['avoidTolls'] || false,
+                        destination: (options['destination']) ? options['destination'] : { location: {lat: 0, lng: 0 }},
+                        origin: (options['current']) ? options['current'] : { location: {lat: 0, lng: 0 }},
+                        provideRouteAlternatives : (options['provideRouteAlternatives']) ? (options['provideRouteAlternatives']) : true,
+                        optimizeWaypoints : (options['optimized']) ? options['optimized'] : true,
+                        waypoints: (options['dropOffs']) ? options['dropOffs'] : [],
+                        avoidHighways: (options['avoidHighways']) ? options['avoidHighways'] : false,
+                        avoidTolls: (options['avoidTolls']) ? (options['avoidTolls']) : false,
                         travelMode: g.maps.TravelMode.DRIVING,
                         unitSystem: g.maps.UnitSystem.IMPERIAL
 
