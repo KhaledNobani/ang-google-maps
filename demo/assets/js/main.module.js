@@ -166,6 +166,10 @@
                     dropOffs: $scope['waypoints'],
                     avoidHighways: true,
                     avoidTolls: true
+                }).then(function(res) {
+                    console.log(res);
+                }, function(error) {
+                    console.log(error);
                 });
             }
 

@@ -35,7 +35,7 @@
             return Direction({
                 $DirectionService: $DirectionService,
                 $DirectionDisplay: $DirectionDisplay
-            });
+            },$q);
         }])
         .directive('mapTemp', ['$window', '$document', '$http', mapTempFactory])
         .directive('autoCompleteTemp', ['$window', '$http', '$rootScope', autoCompleteTempFactory]);
@@ -757,7 +757,7 @@
         
     }
 
-    function Direction(configs) {
+    function Direction(configs, $q) {
 
         var $DirectionService = configs['$DirectionService'],
             $DirectionDisplay = configs['$DirectionDisplay'];
@@ -769,6 +769,8 @@
         return {
 
             setRoute: function(options) {
+                
+                var $Defered = $q.defer();
                 
                 if (!g) return;
                 
@@ -795,11 +797,19 @@
                         if (status == g.maps.DirectionsStatus.OK) {
                             // console.log(response);
                             $DirectionDisplay.setDirections(response);
+                            $Defered.resolve(response);
+                        } else {
+                            $Defered.reject({
+                                message: "There something wrong @ setRoute, please check if you pass appropriate parameters into this function",
+                                code: 0
+                            });
                         }
 
                     });
 
                 }
+                
+                return $Defered.promise;
 
             },
             
