@@ -474,7 +474,8 @@
                         strokeColor: $Configs['strokeColor'] || '#19CA93',
                         strokeOpacity: $Configs['strokeOpacity'] || 1,
                         strokeWeight: $Configs['strokeWeight'] || 4,
-                        map: $Maps
+                        map: $Maps,
+                        zIndex: $Configs['zIndex'] || 1,
                     });
                 
                 if ($Configs['name']) $Maps['O$polyline'][$Configs['name']] = $PathPolyline;
