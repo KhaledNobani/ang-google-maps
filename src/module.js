@@ -15,7 +15,8 @@
                 $DirectionDisplay = new g.maps.DirectionsRenderer({
                     draggable: true,
                     hideRouteList: true,
-                    suppressMarkers: true
+                    suppressMarkers: true,
+                    suppressPolylines: true
                     //infoWindow: new google.maps.InfoWindow
             });
  
