@@ -40,6 +40,49 @@
         .directive('mapTemp', ['$window', '$document', '$http', mapTempFactory])
         .directive('autoCompleteTemp', ['$window', '$http', '$rootScope', autoCompleteTempFactory]);
     
+    /**
+      * Gets the overall paths from $Legs.
+      */
+    function getOverallPaths($Legs, $Options) {
+        var $Legs = $Legs || [],
+            $Options = $Options || {},
+            $Paths = [];
+        
+        // First iteration on legs
+        for ( var index = 0, length = $Legs.length; index < length; index++) {
+        
+            var $Steps = ('steps' in $Legs[index]) ? $Legs[index]['steps'] : [];
+            
+            
+            // Second iteration on steps
+            (function($S) {
+                for (var index2 = 0, length2 = $S.length; index2 < length2; index2++) {
+
+                    var $Path = ('path' in $S[index2]) ? $S[index2]['path'] : [];
+
+                    // Third iteration on path
+                    (function($P) {
+                        
+                        for (var index3 = 0, length3 = $P.length; index3 < length3; index3++) {
+                            var $Data = $P[index3];
+                            $Paths.push({
+                                lat: (typeof $Data['lat'] == 'function') ? $Data['lat']() : $Data['lat'],
+                                lng: (typeof $Data['lng'] == 'function') ? $Data['lng']() : $Data['lng']
+                            });
+                        }
+                        
+                    }($Path));
+
+                }
+            }($Steps));
+            
+            if ($Options['isSkipLast'] && index + 1 == length - 1) return $Paths;
+            
+            if (index + 1 == length) return $Paths;
+        }
+        
+    }
+    
     function processLegs($Directions, $Map) {
         
         var $Routes = $Directions.routes[0],
@@ -298,6 +341,9 @@
             return $Data;
             
         };
+        
+        // Attaches getOverallPaths into $Maps.
+        $Maps.getOverallPaths = getOverallPaths;
         
         /**
           * Assign _$Marker service into map's object.

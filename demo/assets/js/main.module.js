@@ -188,6 +188,7 @@
         };
         
         $scope.handleDirectionChange = function($Leg, $parentScope, $Directions) {
+            window.$Directions = $Directions;
             return;
             
             $parentScope['pickUp'] = $scope['pickUp'] = $Leg.current.name;
@@ -244,7 +245,6 @@
     }
     
     function reShapeWaypoints($list) {
-        
         var $List = $list || [],
             $NewList = [];
         
@@ -256,7 +256,6 @@
         }
         
         return $NewList;
-        
     }
 
 
