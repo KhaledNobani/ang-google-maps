@@ -57,7 +57,7 @@
         
     }
     
-    function direction_factory() {
+    function direction_factory($q, $rootScope) {
         var $DirectionService = new g.maps.DirectionsService,
             $DirectionDisplay = new g.maps.DirectionsRenderer({
                     draggable: true,
