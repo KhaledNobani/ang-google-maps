@@ -10,34 +10,7 @@
         .factory('GetPosition', function() { return GetPosition; })
         .factory('GetMarker', function() { return GetMarker; })
         .factory('Geocode', function() { return Geocode(); })
-        .factory('Direction', ['$q', '$rootScope', function($q, $rootScope) {
-            var $DirectionService = new g.maps.DirectionsService,
-                $DirectionDisplay = new g.maps.DirectionsRenderer({
-                    draggable: true,
-                    hideRouteList: true,
-                    suppressMarkers: true,
-                    suppressPolylines: true
-                    //infoWindow: new google.maps.InfoWindow
-            });
- 
-            $DirectionDisplay.addListener('directions_changed', function(res) { 
-                
-                var $Directions = this.directions,
-                    $Map = this.map,
-                    $Leg = $Directions.routes[0].legs[0],
-                    $ProcessedLeg = processLegs($Directions, $Map);
-
-                if (typeof $Map.ondirectionchange == 'function') $Map.ondirectionchange({$Leg: $ProcessedLeg, $parentScope: $rootScope, $Directions: $Directions});
-
-                $rootScope.$digest();
-
-            });
-
-            return Direction({
-                $DirectionService: $DirectionService,
-                $DirectionDisplay: $DirectionDisplay
-            },$q);
-        }])
+        .factory('Direction', ['$q', '$rootScope', direction_factory])
         .directive('mapTemp', ['$window', '$document', '$http', mapTempFactory])
         .directive('autoCompleteTemp', ['$window', '$http', '$rootScope', autoCompleteTempFactory]);
     
@@ -82,6 +55,35 @@
             if (index + 1 == length) return $Paths;
         }
         
+    }
+    
+    function direction_factory() {
+        var $DirectionService = new g.maps.DirectionsService,
+            $DirectionDisplay = new g.maps.DirectionsRenderer({
+                    draggable: true,
+                    hideRouteList: true,
+                    suppressMarkers: true,
+                    suppressPolylines: true
+                    //infoWindow: new google.maps.InfoWindow
+            });
+ 
+            $DirectionDisplay.addListener('directions_changed', function(res) { 
+                
+                var $Directions = this.directions,
+                    $Map = this.map,
+                    $Leg = $Directions.routes[0].legs[0],
+                    $ProcessedLeg = processLegs($Directions, $Map);
+
+                if (typeof $Map.ondirectionchange == 'function') $Map.ondirectionchange({$Leg: $ProcessedLeg, $parentScope: $rootScope, $Directions: $Directions});
+
+                $rootScope.$digest();
+
+            });
+
+        return Direction({
+            $DirectionService: $DirectionService,
+            $DirectionDisplay: $DirectionDisplay
+        },$q);
     }
     
     function processLegs($Directions, $Map) {
@@ -350,46 +352,53 @@
           * Assign _$Marker service into map's object.
           */
         $Maps._$Marker = {
+
             get: function(name) {
+
                 var $Query = $RefMaps.searchMarkers(name);
                 
                 if ($Query.code < 0) return -1;
                 
                 return $Query.$E;
+
             },
+            /**
+              * Deletes single marker from the maps' canvas.
+              */
             delete: function(name) {
+
                 try {
                     var $Query = $RefMaps.searchMarkers(name);
-                    
+
                     if ($Query.code < 0) return false;
-                    
-                    if(typeof $Query.$E.marker == 'object') if(typeof $Query.$E.marker.setMap == 'function') $Query.$E.marker.setMap(null);
-                    
-                    setTimeout(function() {
+
+                    if(typeof $Query.$E.marker == 'object') if(typeof $Query.$E.marker.setMap == 'function') {
+                        $Query.$E.marker.setMap(null);
                         if($RefMaps.$Maps.markers[$Query.index]['marker']) delete $RefMaps.$Maps.markers[$Query.index]['marker'];
                         $RefMaps.$Maps.markers.splice($Query.index, 1);
-                    }, 1);
-                
+                    }
                     return true;
                 } catch (error) {
                     return false;
                 }
-                
+
             },
             updateAll: function(callback) {
                 
                 var callback = callback || function() {};
                 
                 for (var index = 0, length = $RefMaps.$Maps.markers.length; index < length; index++) {
-                 (function(i, $O) {
-                     
-                     callback($O);
-                     
-                 }(index, $RefMaps.$Maps.markers[index]))
-                    
+
+                    (function(i, $O) {
+
+                        callback($O);
+
+                    }(index, $RefMaps.$Maps.markers[index]));
+
                 }
-                
+
             }
+
         };
         
         $Maps._$Polyline = {
@@ -409,7 +418,7 @@
               * @return Array $Paths [{lat: , lng: }, {lat: , lng: }]
               */
             processingSteps: function($Steps) {
-                
+
                 var $Steps = $Steps || undefined,
                     $Paths = [];
                 
@@ -432,7 +441,7 @@
                 }
                 
                 return $Paths;
-                
+
             },
             
             /**
@@ -444,7 +453,7 @@
               * @return Array $Paths.
               */
             getPaths: function($Directions, latlng) {
-                
+
                 var $Routes = $Directions.routes;
                 
                 if (!$Routes.length) throw new Error("Routes can't be empty / undefined @ getPaths method");
@@ -472,14 +481,14 @@
                     }
                     
                 }
-                
+
             },
             
             /**
               * Gets the polyline's object.
               */
             getPolyline: function(name) {
-                
+    
                 var $Data = { code: -1 };
                 
                 if ($Maps.O$polyline) {
@@ -487,7 +496,7 @@
                 }
                     
                 return $Data;
-                
+
             },
             
             /**
@@ -496,7 +505,7 @@
               * @param Object $Polyline.
               */
             clearPolyline: function($Polyline) {
-                
+
                 var $Polyline = $Polyline || {};
                 
                 if ('setMap' in $Polyline && typeof $Polyline.setMap == 'function' ) $Polyline.setMap(null);
@@ -508,7 +517,7 @@
               *
               */
             addPolyline: function($Configs) {
-                
+
                 if ($Maps['O$polyline'][$Configs['name']]) {
                     $Maps['O$polyline'][$Configs['name']].setMap(null);
                     delete $Maps['O$polyline'][$Configs['name']];
@@ -527,7 +536,8 @@
                 
                 if ($Configs['name']) $Maps['O$polyline'][$Configs['name']] = $PathPolyline;
  
-                return $PathPolyline; 
+                return $PathPolyline;
+
             }
 
         };
@@ -625,7 +635,7 @@
     autoCompleteTempCtrl.$inject = ['$scope'];
     
     /**
-      * Handles auto-complete-temp directive's link
+      * Handles auto-complete-temp directive's link.
       *
       * @param {Object} $scope
       * @param {Object} element
@@ -642,8 +652,12 @@
             { type: 'geocode' }
         );
         
-        $scope.element = element[0];     
+        // Assign DOM element of input's field.
+        $scope.element = element[0];    
+        // Assign DOM's index of pac-container which is auto-generated when the user is typing the address.
         if($scope.element) $scope.element.setAttribute('pac-element-index', indexOfPacContainer);
+
+        // Assign nameofinput to watch for the further changes.
         $rootScope[$scope['nameofinput']] = '';
         $rootScope.$watch($scope['nameofinput'], function(newValue, oldValue) {
             //console.log("Something is being changed");
@@ -651,18 +665,16 @@
             if(newValue) $scope.element.value = newValue;
             return newValue;
         });
-        
-        setTimeout(function() {
-            $scope.map["O" + $scope['nameofinput']] = $scope.element;
-        }, 1);
 
-        // Attach an event into autocomplete
+        // Attach an event on user's typing of the address which is handled by Google Places API.
         g.maps.event.addListener($scope.autocomplete, 'place_changed', function() {
+            $scope.map["O" + $scope['nameofinput']] = $scope.element;
             $scope.fillInAddress();
         });
-        
+
+        // The index number for the auto-generated pac-container from Google Places API.
         indexOfPacContainer += 1;
-        
+
     }
     
     autoCompleteTempLink.$inject = ['$scope', 'element', 'attrs', 'ctrls'];
