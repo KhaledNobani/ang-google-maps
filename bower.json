@@ -1,6 +1,6 @@
 {
   "name": "ang-google-maps",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "homepage": "https://github.com/khalednobani/ang-google-maps",
   "description": "Initialise Google Maps, Set Location, Drop Pins, Get Connected Routes between the current location and the destination.",
   "main": "./src/module.js",

@@ -653,7 +653,8 @@
         );
         
         // Assign DOM element of input's field.
-        $scope.element = element[0];    
+        $scope.element = $scope.map["O" + $scope['nameofinput']] = element[0];    
+
         // Assign DOM's index of pac-container which is auto-generated when the user is typing the address.
         if($scope.element) $scope.element.setAttribute('pac-element-index', indexOfPacContainer);
 
@@ -668,7 +669,6 @@
 
         // Attach an event on user's typing of the address which is handled by Google Places API.
         g.maps.event.addListener($scope.autocomplete, 'place_changed', function() {
-            $scope.map["O" + $scope['nameofinput']] = $scope.element;
             $scope.fillInAddress();
         });
 
